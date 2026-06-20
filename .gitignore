@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+/dist
+/dist-ssr
+*.local
+
+# Large datasets (exclude to prevent GitHub push errors)
+violations_scored (1).csv
+hotspots (1).csv
+hotspots (1).geojson
+repeat_offenders.csv
+enforcement_outcome_report.csv
+hotspot_anomalies.csv
+hotspot_forecast.csv
+station_load.csv
+
+# Environment variables
+.env
+.env.production
+.env.development
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# System Files
+.DS_Store
+Thumbs.db

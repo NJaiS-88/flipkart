@@ -1,0 +1,8 @@
+SEVERITY WEIGHT CALIBRATION REPORT
+==================================================
+Mean severity_score where data_sent_to_scita = TRUE : 1.325
+Mean severity_score where data_sent_to_scita = FALSE: 1.321
+T-test p-value: 0.0145
+RESULT: Statistically significant difference. Current severity weights show measurable association with whether a violation was processed/sent — some support for the current weighting scheme.
+
+NOTE: This is one possible proxy check, not proof of correctness. Treat as a directional sanity check only.
