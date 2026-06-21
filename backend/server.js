@@ -379,73 +379,133 @@ app.get("/api/traffic-token", async (req, res) => {
 });
 
 // CORRECT MAPPLS ENDPOINT: https://apis.mappls.com/advancedmaps/v1/{token}/distance_matrix/driving/{coords}
+// CORRECT MAPPLS ENDPOINT: https://apis.mappls.com/advancedmaps/v1/{token}/distance_matrix/driving/{coords}
 async function runTrafficSync() {
   try {
-    console.log("[Traffic Sync] Running MapmyIndia traffic sync for hotspots...");
-    const clientId = process.env.MAPMYINDIA_CLIENT_ID;
-    const clientSecret = process.env.MAPMYINDIA_CLIENT_SECRET;
-    if (!clientId || !clientSecret) {
-      console.log("[Traffic Sync] Missing MapmyIndia credentials. Skipping.");
-      return;
-    }
-
-    // 1. Get OAuth Token
-    const authResponse = await fetch("https://outpost.mappls.com/api/security/oauth/token", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `grant_type=client_credentials&client_id=${encodeURIComponent(clientId)}&client_secret=${encodeURIComponent(clientSecret)}`
-    });
-    if (!authResponse.ok) { console.log("[Traffic Sync] Auth failed."); return; }
-    const authData = await authResponse.json();
-    const token = authData.access_token;
-    console.log("[Traffic Sync] Token obtained.");
-
-    // 2. Get top 20 hotspots
     const hotspots = await Hotspot.find({ avg_lat: { $exists: true }, avg_lon: { $exists: true } })
       .sort({ rank_v3: 1 }).limit(20);
-    
+
+    const clientId = process.env.MAPMYINDIA_CLIENT_ID;
+    const clientSecret = process.env.MAPMYINDIA_CLIENT_SECRET;
+
+    let useTomTomFallback = !clientId || !clientSecret;
+    let token = null;
+
+    if (!useTomTomFallback) {
+      console.log("[Traffic Sync] Running MapmyIndia traffic sync for hotspots...");
+      try {
+        const authResponse = await fetch("https://outpost.mappls.com/api/security/oauth/token", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `grant_type=client_credentials&client_id=${encodeURIComponent(clientId)}&client_secret=${encodeURIComponent(clientSecret)}`
+        });
+        if (!authResponse.ok) {
+          console.log("[Traffic Sync] MapmyIndia auth failed. Falling back to TomTom.");
+          useTomTomFallback = true;
+        } else {
+          const authData = await authResponse.json();
+          token = authData.access_token;
+          console.log("[Traffic Sync] MapmyIndia Token obtained.");
+        }
+      } catch (err) {
+        console.log("[Traffic Sync] MapmyIndia auth error, falling back to TomTom:", err.message);
+        useTomTomFallback = true;
+      }
+    }
+
+    // Load TomTom Key if needed
+    let tomtomKey = "";
+    if (useTomTomFallback) {
+      console.log("[Traffic Sync] Running TomTom traffic sync fallback for hotspots...");
+      tomtomKey = process.env.TOMTOM_KEY || process.env.VITE_TOMTOM_KEY;
+      if (!tomtomKey) {
+        try {
+          const frontendEnvPath = path.join(__dirname, "../frontend/.env");
+          if (fs.existsSync(frontendEnvPath)) {
+            const content = fs.readFileSync(frontendEnvPath, "utf-8");
+            const match = content.match(/VITE_TOMTOM_KEY\s*=\s*(.*)/);
+            if (match && match[1]) {
+              tomtomKey = match[1].trim();
+            }
+          }
+        } catch (e) {
+          console.log("[Traffic Sync] Failed to read frontend env for TomTom key:", e.message);
+        }
+      }
+
+      if (!tomtomKey) {
+        console.log("[Traffic Sync] Neither MapmyIndia nor TomTom credentials configured. Skipping sync.");
+        return;
+      }
+    }
+
     let updated = 0;
-    // 3. For each hotspot, call Mappls distance matrix API (CORRECT endpoint)
     for (const hotspot of hotspots) {
       if (!hotspot.avg_lat || !hotspot.avg_lon) continue;
-      
+
       const lat1 = parseFloat(hotspot.avg_lat);
       const lon1 = parseFloat(hotspot.avg_lon);
       const lat2 = lat1 + 0.005; // ~500m north
       const lon2 = lon1;
-      
-      // CORRECT URL: token in path, coords as lon,lat
-      const coords = `${lon1},${lat1};${lon2},${lat2}`;
-      const url = `https://apis.mappls.com/advancedmaps/v1/${token}/distance_matrix/driving/${coords}`;
-      
+
       try {
-        const apiRes = await fetch(url);
-        if (apiRes.ok) {
-          const data = await apiRes.json();
-          // Response: { results: { distances: [[0, 809.8]], durations: [[0, 177.1]], code: "Ok" } }
-          const mDist = data.results?.distances?.[0]?.[1];
-          const sDur  = data.results?.durations?.[0]?.[1];
-          
-          if (mDist > 0 && sDur > 0) {
-            const km = mDist / 1000;
-            const hours = sDur / 3600;
-            const speed = km / hours;  // km/h
-            
-            let congestion_level = "low";
-            let congestion_multiplier = 1.0;
-            if (speed < 12.0) { congestion_level = "heavy"; congestion_multiplier = 1.5; }
-            else if (speed < 20.0) { congestion_level = "moderate"; congestion_multiplier = 1.2; }
-            
-            hotspot.congestion_level = congestion_level;
-            hotspot.congestion_multiplier = congestion_multiplier;
-            hotspot.congestion_speed_kmh = Math.round(speed * 10) / 10;
-            hotspot.congestion_updated_at = new Date();
-            await hotspot.save();
-            updated++;
-            console.log(`[Traffic Sync] #${hotspot.rank_v3}: ${speed.toFixed(1)} km/h → ${congestion_level}`);
+        let speed = null;
+        if (!useTomTomFallback && token) {
+          const coords = `${lon1},${lat1};${lon2},${lat2}`;
+          const url = `https://apis.mappls.com/advancedmaps/v1/${token}/distance_matrix/driving/${coords}`;
+          const apiRes = await fetch(url);
+          if (apiRes.ok) {
+            const data = await apiRes.json();
+            const mDist = data.results?.distances?.[0]?.[1];
+            const sDur  = data.results?.durations?.[0]?.[1];
+            if (mDist > 0 && sDur > 0) {
+              const km = mDist / 1000;
+              const hours = sDur / 3600;
+              speed = km / hours;
+            }
+          } else {
+            console.log(`[Traffic Sync] MapmyIndia API error ${apiRes.status} for rank #${hotspot.rank_v3}. Trying TomTom fallback...`);
+            // Set flag to true for this / remaining items if needed, or just try TomTom for this one
           }
-        } else {
-          console.log(`[Traffic Sync] API error ${apiRes.status} for rank #${hotspot.rank_v3}`);
+        }
+
+        // If MapmyIndia failed or was skipped, try TomTom
+        if (speed === null && tomtomKey) {
+          const url = `https://api.tomtom.com/routing/1/calculateRoute/${lat1},${lon1}:${lat2},${lon2}/json?key=${tomtomKey}`;
+          const apiRes = await fetch(url);
+          if (apiRes.ok) {
+            const data = await apiRes.json();
+            const route = data.routes?.[0];
+            const mDist = route?.summary?.lengthInMeters;
+            const sDur  = route?.summary?.travelTimeInSeconds;
+            if (mDist > 0 && sDur > 0) {
+              const km = mDist / 1000;
+              const hours = sDur / 3600;
+              speed = km / hours;
+            }
+          } else {
+            console.log(`[Traffic Sync] TomTom API error ${apiRes.status} for rank #${hotspot.rank_v3}`);
+          }
+        }
+
+        if (speed !== null) {
+          let congestion_level = "low";
+          let congestion_multiplier = 1.0;
+          if (speed < 12.0) {
+            congestion_level = "heavy";
+            congestion_multiplier = 1.5;
+          } else if (speed < 20.0) {
+            congestion_level = "moderate";
+            congestion_multiplier = 1.2;
+          }
+
+          hotspot.congestion_level = congestion_level;
+          hotspot.congestion_multiplier = congestion_multiplier;
+          hotspot.congestion_speed_kmh = Math.round(speed * 10) / 10;
+          hotspot.congestion_updated_at = new Date();
+          await hotspot.save();
+          updated++;
+          console.log(`[Traffic Sync - ${speed === null ? "Failed" : (token && !useTomTomFallback ? "MapmyIndia" : "TomTom")}] #${hotspot.rank_v3}: ${speed.toFixed(1)} km/h → ${congestion_level}`);
         }
       } catch (e) {
         console.log(`[Traffic Sync] fetch error for rank #${hotspot.rank_v3}: ${e.message}`);
