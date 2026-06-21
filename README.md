@@ -90,16 +90,24 @@ graph TD
 ### Workflow 1: Geospatial Hotspot Clustering & Severity Model Validation Pipeline
 
 ```mermaid
-graph TD
-    A[Start: Raw Bengaluru Parking Violations CSV] --> B[DBSCAN Clustering Script]
-    B --> C{Within Spatial Proximity Threshold?}
-    C -->|No| D[Noise Category Cluster -1 - Discarded]
-    C -->|Yes| E[Assign to Valid Cluster ID]
-    E --> F[Calculate Severity Weight W_severity]
-    F --> G[Aggregate to Hotspot Impact Score]
-    G --> H[Run Two-Sample Independent T-Test]
-    H --> I{Compare Hotspot Scores vs Random Distribution}
-    I --> J[Validate Statistical Significance p < 0.05]
+graph LR
+    subgraph Data Input & DBSCAN
+        A[Raw CSV] -->|Load pandas| B(DBSCAN: eps=350m, min_samples=15)
+        B -->|Compute distance matrix| C{Geo-Proximity?}
+        C -->|Dist > eps| D[Cluster -1: Noise / Discarded]
+        C -->|Dist <= eps| E[Cluster ID assigned]
+    end
+    subgraph Severity Modeling
+        E -->|Map violation codes| F(Weights: Heavy=5, Med=3, Low=1)
+        F -->|Temporal Decay| G("Score = Sum(Weight * e^(-0.05 * t_months))")
+    end
+    subgraph Validation Engine
+        G --> H(Extract coordinates)
+        H --> I("Two-Sample T-Test (Hotspot vs Random Control)")
+        I --> J("Calculate t-stat & p-value")
+        J -->|p < 0.05| K[Model Validated: Statistically Significant]
+        J -->|p >= 0.05| L[Model Rejected: Recalibrate Weights]
+    end
 ```
 
 1. **Clustering Analysis**: High-density parking violations are grouped using DBSCAN within Python ML scripts. Points are evaluated based on coordinate proximity, generating distinct geographic hotspot clusters. Noise points are assigned to cluster `-1` and discarded to focus resources.
@@ -112,32 +120,35 @@ graph TD
 ### Workflow 2: Dynamic Live Congestion Sync & Multi-API Fallback Routing Loop
 
 ```mermaid
-graph TD
-    Start[Cron Timer / Server Launch] --> GetHot[Query Top 20 Hotspots from DB]
-    GetHot --> CheckCreds{MapmyIndia Mappls Credentials Configured?}
-    CheckCreds -->|Yes| MapOAuth[Request OAuth 2.0 Token from Mappls]
-    MapOAuth --> AuthCheck{Auth Success?}
-    AuthCheck -->|Yes| MapMatrix[Call Mappls Distance Matrix API]
-    MapMatrix --> MapMatrixCheck{Success?}
-    MapMatrixCheck -->|Yes| CalcMapSpeed[Calculate Speed km/h]
-    
-    CheckCreds -->|No| TomFallback[Fallback: Load VITE_TOMTOM_KEY]
-    AuthCheck -->|No| TomFallback
-    MapMatrixCheck -->|No| TomFallback
-    
-    TomFallback --> TomKeyCheck{TomTom Key Exists?}
-    TomKeyCheck -->|Yes| TomRoute[Call TomTom Routing API]
-    TomRoute --> TomRouteCheck{Success?}
-    TomRouteCheck -->|Yes| CalcTomSpeed[Calculate Speed km/h]
-    
-    TomRouteCheck -->|No| LogErr[Log Error / Keep Previous Data]
-    TomKeyCheck -->|No| LogErr
-    
-    CalcMapSpeed --> MatchCong[Match Speed to Congestion Status]
-    CalcTomSpeed --> MatchCong
-    
-    MatchCong --> SetMult[Determine Congestion Multiplier]
-    SetMult --> SaveDB[Update MongoDB: congestion_level & congestion_multiplier]
+graph LR
+    subgraph Scheduler
+        A(Cron Daemon: 10m) --> B[Fetch Top 20 Hotspots from DB]
+    end
+    subgraph MapmyIndia Pipeline
+        B --> C{Mappls Credentials?}
+        C -->|Yes| D[Post OAuth 2.0 Client Credentials]
+        D -->|Response 200| E[Extract access_token]
+        E --> F[Construct Coords: Source to Dest 500m N]
+        F --> G[Fetch Distance Matrix API]
+        G -->|Response 200| H[Extract Distance & Duration]
+    end
+    subgraph Fallback Engine
+        C -->|No| I[Load VITE_TOMTOM_KEY]
+        D -->|Fail| I
+        G -->|Fail/Limit| I
+        I --> J{TomTom Key Valid?}
+        J -->|Yes| K[Call TomTom Routing API]
+        K -->|Response 200| L[Extract summary.length & summary.travelTime]
+    end
+    subgraph Processing
+        H --> M[Compute Speed = dist / time]
+        L --> M
+        M --> N{Speed Ranges km/h}
+        N -->|< 12| O[Heavy: Mult 1.5]
+        N -->|12 - 20| P[Moderate: Mult 1.2]
+        N -->|>= 20| Q[Low: Mult 1.0]
+        O & P & Q --> R[Mongoose save() -> MongoDB]
+    end
 ```
 
 1. **Initiation**: The Express backend runs a cron job scheduler every 10 minutes to verify traffic conditions on the closest roads to the hotspots.
@@ -155,17 +166,28 @@ graph TD
 ### Workflow 3: Multi-Agent TSP Patrol Optimization & Shift-Aware Scheduling Engine
 
 ```mermaid
-graph TD
-    Req[POST Request /api/patrol-routes] --> SpawnOpt[Spawn Python Optimizer two.py]
-    SpawnOpt --> LoadHot[Load Station Hotspots from CSV/DB]
-    LoadHot --> KMeans[Apply K-Means Clustering on Coordinates]
-    KMeans --> SplitSec[Assign Hotspots into Sector Nodes for Officers]
-    SplitSec --> TSP[Apply Nearest-Neighbour Heuristic for Route Sequencing]
-    TSP --> AlignShift[Scale Travel & Dwell Times based on Shift Selection]
-    AlignShift --> ReadCong[Read Congestion Speed Multiplier from MongoDB]
-    ReadCong --> CalcETA[Compute Exact Stop ETAs]
-    CalcETA --> GenBrief[Generate Briefing Outputs: CSV, JSON, TXT]
-    GenBrief --> ResUI[Express Server Returns JSON to React Client UI]
+graph LR
+    subgraph Frontend Inputs
+        A[POST /api/patrol-routes] -->|Body: station, officersCount, shift| B[Express server]
+    end
+    subgraph Python Engine two.py
+        B -->|execFile python| C[Filter hotspots for station]
+        C -->|Compute centroids| D[K-Means Clustering: group into K sectors]
+        D --> E[Sector Coordinates Partition]
+        E -->|For each sector| F[Nearest-Neighbour TSP Solver]
+        F --> G[Sequence visited locations]
+    end
+    subgraph Speed & Shift Multipliers
+        G --> H[Get active shift factors]
+        H --> I("Apply live congestion multiplier from DB")
+        I --> J[Adjust transit time & dwell: 20m]
+        J --> K[Compute precise stop ETAs]
+    end
+    subgraph Output
+        K --> L[Format CSV, JSON, TXT]
+        L --> M[Return stdout JSON back to Express]
+        M --> N[State update -> Render leaflet paths]
+    end
 ```
 
 1. **Parameter Submission**: The frontend sends the target police station, officer count ($K$), hotspot threshold ($N$), and shift selection (`morning`, `afternoon`, `evening`, `night`) via a POST request to `/api/patrol-routes`.
@@ -179,17 +201,25 @@ graph TD
 ### Workflow 4: PDF Compilation Engine & MongoDB Binary Storage Lifecycle
 
 ```mermaid
-graph TD
-    UserReq[Generate Report UI Trigger] --> PostEndpoint[POST /api/reports/generate]
-    PostEndpoint --> SpawnRep[Spawn Python Report Engine one.py]
-    SpawnRep --> FilterCSV[Load & Filter target month records from Violations CSV]
-    FilterCSV --> AggStats[Compute Station Aggregates, Trends & Repeat Offenders]
-    AggStats --> RenderPDF[Draw Canvas using reportlab and render layout charts]
-    RenderPDF --> OutputPath[Write Report PDF & Output File Path]
-    OutputPath --> ReadBuf[Node Server Reads PDF into Binary Buffer]
-    ReadBuf --> UpsertDB[Upsert Binary PDF Buffer into MongoDB Reports Collection]
-    GetReq[Client Requests Download: GET /api/reports/:id/download] --> StreamRes[Set Content-Disposition Header & Stream PDF Buffer to Browser]
-    UpsertDB -.->|Triggers Metadata Load| GetReq
+graph LR
+    subgraph Frontend Request
+        A[Select Area, Year, Month] -->|POST /api/reports/generate| B[Express API]
+    end
+    subgraph Python engine one.py
+        B -->|execFile child_process| C[Load violations CSV]
+        C -->|Pandas query| D[Filter station & date records]
+        D --> E[Compute statistics: category breakdown, trends]
+        E --> F[Generate matplotlib trend charts]
+        F --> G[ReportLab Canvas rendering]
+        G --> H[Generate report PDF file]
+    end
+    subgraph Storage & Download
+        H -->|Filename stdout| I[Node reads PDF into Binary Buffer]
+        I --> J[Mongoose Reports.findOneAndUpdate upsert]
+        J --> K[GET /api/reports/:id/download]
+        K --> L[Set headers: Content-Type & Content-Disposition]
+        L --> M[Stream binary chunk back to browser]
+    end
 ```
 
 1. **Triggering Generation**: The user selects a station, year, and month, and clicks "Generate Report".
@@ -203,20 +233,26 @@ graph TD
 ### Workflow 5: High-Speed Memory-Efficient CSV Streaming & Database Seeding Pipeline
 
 ```mermaid
-graph TD
-    StartSeed[Start node seed.js] --> CreateStream[Create Memory-Efficient Read Stream on CSV]
-    CreateStream --> PipeParser[Pipe to CSV Parser Line-by-Line]
-    PipeParser --> LineLoop[Loop Through Incoming Rows]
-    LineLoop --> FilterNoise{Is Cluster ID = -1?}
-    FilterNoise -->|Yes| DiscardNode[Discard Noise Record]
-    FilterNoise -->|No| PushBatch[Push Record to Bulk Batch Array]
-    PushBatch --> BatchCheck{Batch Array Size = 10,000?}
-    BatchCheck -->|Yes| BulkWrite[Mongoose bulkWrite Insert Batch to MongoDB]
-    BulkWrite --> ResetArr[Reset Array]
-    BatchCheck -->|No| PipeParser
-    LineLoop --> Finished{Reached EOF?}
-    Finished -->|Yes| BuildIdx[Build 2DSphere Spatial & Compound Indexing]
-    BuildIdx --> Completed[Seeding Completed]
+graph LR
+    subgraph Input Stream
+        A[Start node seed.js] --> B[Create CSV Read Stream]
+        B --> C[Pipe to CSV-Parser stream]
+    end
+    subgraph Filtering & Batching
+        C -->|Line-by-line chunk| D{Check cluster_id}
+        D -->|cluster_id = -1| E[Discard Noise Event]
+        D -->|cluster_id != -1| F[Push to Batch Array]
+        F --> G{Batch Size = 10,000?}
+        G -->|Yes| H[Mongoose bulkWrite Insert]
+        H --> I[Empty Batch Array]
+    end
+    subgraph Database Indexing
+        G -->|No/EOF| J[Finish reading stream]
+        J --> K[Execute indexing queries]
+        K --> L[Create 2DSphere on avg_lat/avg_lon]
+        K --> M[Create Compound Index on station & rank]
+        L & M --> N[Seeding Complete]
+    end
 ```
 
 1. **Resource Constraints Handling**: Seeding datasets of over 240,000 records requires careful memory management to avoid Node heap exhaustion.
@@ -229,15 +265,22 @@ graph TD
 ### Workflow 6: Double-Buffered Leaflet Layer Toggling & Render Event Loop
 
 ```mermaid
-graph TD
-    Mount[React Dashboard Mounts MapComponent] --> RenderBase[Leaflet Renders Base Dark Tile Layer]
-    RenderBase --> PaintCircles[React Paints Hotspot Circle Markers on Map]
-    PaintCircles --> ToggleObs[User Toggles TomTom Traffic Flow Layer]
-    ToggleObs --> LayerMount{Layer Mounted?}
-    LayerMount -->|Yes| InterpUrl[Leaflet Interpolates Tile Url with z, x, y coordinates]
-    InterpUrl --> FetchTile[Asynchronous Fetch Tiles from TomTom CDN]
-    FetchTile --> PaintOverlay[Leaflet Renders Overlay in Double-Buffered Layer]
-    LayerMount -->|No| Unmount[Unmount Overlay Component]
+graph LR
+    subgraph State Mounting
+        A[React App mount] --> B[Fetch hotspots & active token]
+        B --> C[Leaflet MapContainer initialization]
+        C --> D[Render Base CartoDB Dark Tiles]
+    end
+    subgraph Layers Event Loop
+        D --> E[Map circle markers size = sqrt_impact]
+        E --> F[User toggles traffic overlay checkbox]
+        F --> G{Toggle State Checked?}
+        G -->|Yes| H[Mount Leaflet TileLayer overlay component]
+        H --> I[Interpolate Tile URL with z, x, y and apiKey]
+        I --> J[Fetch tile image asynchronously from TomTom CDN]
+        J --> K[Double-buffered Leaflet canvas layer paint]
+        G -->|No| L[Unmount layer component & free memory]
+    end
 ```
 
 1. **Map Rendering Context**: The React UI mounts the Leaflet `MapContainer` centered on Bengaluru coordinates. Circles indicating hotspot boundaries are painted on the canvas using React state arrays.
