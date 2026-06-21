@@ -33,10 +33,10 @@ async function seedHotspots() {
   console.log("Seeding Hotspots...");
   await Hotspot.deleteMany({});
   
-  const hotspotsRaw = await parseCSV(path.resolve("../hotspots (1).csv"));
+  const hotspotsRaw = await parseCSV(path.resolve("../hotspots_time_decay.csv"));
   const enforcementRaw = await parseCSV(path.resolve("../enforcement_outcome_report.csv"));
   const anomaliesRaw = await parseCSV(path.resolve("../hotspot_anomalies.csv"));
-  const forecastRaw = await parseCSV(path.resolve("../hotspot_forecast.csv"));
+  
 
   // Index maps by cluster_id
   const enforcementMap = new Map();
@@ -63,7 +63,7 @@ async function seedHotspots() {
     });
   });
 
-  const forecastMap = new Map();
+  
   forecastRaw.forEach(row => {
     forecastMap.set(parseInt(row.cluster_id), {
       weeks_of_history: parseInt(row.weeks_of_history) || 0,
@@ -92,7 +92,20 @@ async function seedHotspots() {
       police_station: row.top_police_station || "",
       junction: row.top_junction || "",
       dominant_violation: row.dominant_violation || "",
-      
+      // Road context
+      road_class: row.road_class || "",
+      road_name: row.road_name || "",
+      road_dist_m: row.road_dist_m ? parseFloat(row.road_dist_m) : null,
+      road_class_weight: row.road_class_weight ? parseFloat(row.road_class_weight) : 1.0,
+      hotspot_impact_score_v3: parseFloat(row.hotspot_impact_score_v2) || 0,
+      rank_v3: parseInt(row.rank_v2) || 9999,
+      // Time‑decay fields
+      total_decayed_impact: parseFloat(row.total_decayed_impact) || 0,
+      avg_decayed_impact: parseFloat(row.avg_decayed_impact) || 0,
+      last_active_date: row.last_active_date ? new Date(row.last_active_date) : null,
+      trend_direction: row.trend_direction || "",
+      decay_score_norm: parseFloat(row.decay_score_norm) || 0,
+      hotspot_score_decay_blended: parseFloat(row.hotspot_score_decay_blended) || 0,
       // Merged enforcement outcome metrics
       ...enforcement,
 
@@ -114,7 +127,7 @@ async function seedViolations() {
   console.log("Seeding Violations (Streaming)...");
   await Violation.deleteMany({});
 
-  const violationsPath = path.resolve("../violations_scored (1).csv");
+  const violationsPath = path.resolve("../violations_scored_v2.csv");
   let batch = [];
   let totalInserted = 0;
   const BATCH_SIZE = 10000;
@@ -146,7 +159,7 @@ async function seedViolations() {
         junction_name: row.junction_name || "",
         validation_status: row.validation_status || "",
         cluster_id: clusterId,
-        violation_impact: parseFloat(row.violation_impact) || 0
+        violation_impact: parseFloat(row.violation_impact_v2) || parseFloat(row.violation_impact) || 0
       });
 
       if (batch.length >= BATCH_SIZE) {

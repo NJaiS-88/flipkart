@@ -12,6 +12,23 @@ const HotspotSchema = new mongoose.Schema({
   junction: { type: String, default: "" },
   dominant_violation: { type: String, default: "" },
   
+  // Road context fields (OSM automated match)
+  // Time‑decay fields
+  last_active_date: { type: Date },
+  trend_direction: { type: String, default: "" },
+  // Time‑decay fields
+  total_decayed_impact: { type: Number, default: 0 },
+  avg_decayed_impact: { type: Number, default: 0 },
+  decay_score_norm: { type: Number, default: 0 },
+  // Existing fields continue
+  hotspot_score_decay_blended: { type: Number, default: 0 },
+  road_class: { type: String, default: "" },
+  road_name: { type: String, default: "" },
+  road_dist_m: { type: Number, default: null },
+  road_class_weight: { type: Number, default: 1.0 },
+  hotspot_impact_score_v3: { type: Number, required: true },
+  rank_v3: { type: Number, required: true },
+  
   // Enforcement Outcomes (before vs after)
   violation_count_before: { type: Number, default: 0 },
   violation_count_after: { type: Number, default: 0 },
@@ -77,4 +94,14 @@ export const Hotspot = mongoose.model("Hotspot", HotspotSchema);
 export const Violation = mongoose.model("Violation", ViolationSchema);
 export const RepeatOffender = mongoose.model("RepeatOffender", RepeatOffenderSchema);
 export const StationLoad = mongoose.model("StationLoad", StationLoadSchema);
+
+// New Report schema for monthly enforcement PDFs
+const ReportSchema = new mongoose.Schema({
+  station: { type: String, required: true },
+  year: { type: Number, required: true },
+  month: { type: Number, required: true },
+  pdfData: { type: Buffer, required: true },
+  metadata: { type: Object },
+}, { timestamps: true });
+export const Report = mongoose.model("Report", ReportSchema);
 

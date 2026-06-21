@@ -1,0 +1,242 @@
+{
+  "generated_at": "2026-06-21T08:05:45.738209",
+  "shift": "morning",
+  "n_officers": 3,
+  "top_n_hotspots": 15,
+  "zone_filter": null,
+  "dwell_minutes_per_stop": 20,
+  "avg_speed_kmph": 25.0,
+  "routes": [
+    {
+      "officer_id": 1,
+      "shift": "morning",
+      "shift_start": "07:00",
+      "shift_end": "12:00",
+      "n_stops": 11,
+      "total_km": 5.8,
+      "total_patrol_minutes": 230,
+      "estimated_finish": "10:50",
+      "stops": [
+        {
+          "stop_order": 1,
+          "officer_id": 1,
+          "cluster_id": "7374",
+          "lat": 12.981137799595142,
+          "lon": 77.61016131563765,
+          "score": 2390.516,
+          "eta": "07:00",
+          "depart": "07:20",
+          "dwell_minutes": 20,
+          "travel_km_from_prev": 0.0,
+          "travel_min_from_prev": 0
+        },
+        {
+          "stop_order": 2,
+          "officer_id": 1,
+          "cluster_id": "7375",
+          "lat": 12.981047442873304,
+          "lon": 77.61037098303167,
+          "score": 1058.5191,
+          "eta": "07:20",
+          "depart": "07:40",
+          "dwell_minutes": 20,
+          "travel_km_from_prev": 0.025,
+          "travel_min_from_prev": 0
+        },
+        {
+          "stop_order": 3,
+          "officer_id": 1,
+          "cluster_id": "7708",
+          "lat": 12.984002717456557,
+          "lon": 77.60361064826225,
+          "score": 1526.984,
+          "eta": "07:41",
+          "depart": "08:01",
+          "dwell_minutes": 20,
+          "travel_km_from_prev": 0.803,
+          "travel_min_from_prev": 1
+        },
+        {
+          "stop_order": 4,
+          "officer_id": 1,
+          "cluster_id": "7356",
+          "lat": 12.981155445856354,
+          "lon": 77.59847456637726,
+          "score": 1208.4334,
+          "eta": "08:02",
+          "depart": "08:22",
+          "dwell_minutes": 20,
+          "travel_km_from_prev": 0.64,
+          "travel_min_from_prev": 1
+        },
+        {
+          "stop_order": 5,
+          "officer_id": 1,
+          "cluster_id": "6234",
+          "lat": 12.973546032368702,
+          "lon": 77.57931360278671,
+          "score": 1019.0208,
+          "eta": "08:27",
+          "depart": "08:47",
+          "dwell_minutes": 20,
+          "travel_km_from_prev": 2.242,
+          "travel_min_from_prev": 5
+        },
+        {
+          "stop_order": 6,
+          "officer_id": 1,
+          "cluster_id": "6657",
+          "lat": 12.97639103717647,
+          "lon": 77.57741960647058,
+          "score": 1067.8165,
+          "eta": "08:47",
+          "depart": "09:07",
+          "dwell_minutes": 20,
+          "travel_km_from_prev": 0.377,
+          "travel_min_from_prev": 0
+        },
+        {
+          "stop_order": 7,
+          "officer_id": 1,
+          "cluster_id": "6781",
+          "lat": 12.977340415028902,
+          "lon": 77.57652969917424,
+          "score": 1131.4151,
+          "eta": "09:07",
+          "depart": "09:27",
+          "dwell_minutes": 20,
+          "travel_km_from_prev": 0.143,
+          "travel_min_from_prev": 0
+        },
+        {
+          "stop_order": 8,
+          "officer_id": 1,
+          "cluster_id": "5134",
+          "lat": 12.964603587272729,
+          "lon": 77.57612815397727,
+          "score": 1151.6858,
+          "eta": "09:30",
+          "depart": "09:50",
+          "dwell_minutes": 20,
+          "travel_km_from_prev": 1.417,
+          "travel_min_from_prev": 3
+        },
+        {
+          "stop_order": 9,
+          "officer_id": 1,
+          "cluster_id": "5135",
+          "lat": 12.964528477286246,
+          "lon": 77.5765020232342,
+          "score": 1217.5246,
+          "eta": "09:50",
+          "depart": "10:10",
+          "dwell_minutes": 20,
+          "travel_km_from_prev": 0.041,
+          "travel_min_from_prev": 0
+        },
+        {
+          "stop_order": 10,
+          "officer_id": 1,
+          "cluster_id": "5136",
+          "lat": 12.964416884738636,
+          "lon": 77.57707579400001,
+          "score": 1143.88,
+          "eta": "10:10",
+          "depart": "10:30",
+          "dwell_minutes": 20,
+          "travel_km_from_prev": 0.063,
+          "travel_min_from_prev": 0
+        },
+        {
+          "stop_order": 11,
+          "officer_id": 1,
+          "cluster_id": "5067",
+          "lat": 12.964000933840303,
+          "lon": 77.57685039003802,
+          "score": 1791.7505,
+          "eta": "10:30",
+          "depart": "10:50",
+          "dwell_minutes": 20,
+          "travel_km_from_prev": 0.052,
+          "travel_min_from_prev": 0
+        }
+      ]
+    },
+    {
+      "officer_id": 2,
+      "shift": "morning",
+      "shift_start": "07:00",
+      "shift_end": "12:00",
+      "n_stops": 3,
+      "total_km": 0.91,
+      "total_patrol_minutes": 62,
+      "estimated_finish": "08:02",
+      "stops": [
+        {
+          "stop_order": 1,
+          "officer_id": 2,
+          "cluster_id": "3188",
+          "lat": 12.939751272663091,
+          "lon": 77.69555892709562,
+          "score": 1545.93,
+          "eta": "07:00",
+          "depart": "07:20",
+          "dwell_minutes": 20,
+          "travel_km_from_prev": 0.0,
+          "travel_min_from_prev": 0
+        },
+        {
+          "stop_order": 2,
+          "officer_id": 2,
+          "cluster_id": "2727",
+          "lat": 12.933780928803648,
+          "lon": 77.69087433803111,
+          "score": 1455.211,
+          "eta": "07:22",
+          "depart": "07:42",
+          "dwell_minutes": 20,
+          "travel_km_from_prev": 0.836,
+          "travel_min_from_prev": 2
+        },
+        {
+          "stop_order": 3,
+          "officer_id": 2,
+          "cluster_id": "2695",
+          "lat": 12.933227864165543,
+          "lon": 77.69123125121803,
+          "score": 1144.8782,
+          "eta": "07:42",
+          "depart": "08:02",
+          "dwell_minutes": 20,
+          "travel_km_from_prev": 0.073,
+          "travel_min_from_prev": 0
+        }
+      ]
+    },
+    {
+      "officer_id": 3,
+      "shift": "morning",
+      "shift_start": "07:00",
+      "shift_end": "12:00",
+      "n_stops": 1,
+      "total_km": 0,
+      "total_patrol_minutes": 20,
+      "estimated_finish": "07:20",
+      "stops": [
+        {
+          "stop_order": 1,
+          "officer_id": 3,
+          "cluster_id": "12139",
+          "lat": 13.07128029909154,
+          "lon": 77.58800666303051,
+          "score": 1113.8751,
+          "eta": "07:00",
+          "depart": "07:20",
+          "dwell_minutes": 20,
+          "travel_km_from_prev": 0.0,
+          "travel_min_from_prev": 0
+        }
+      ]
+    }
+  ]
+}

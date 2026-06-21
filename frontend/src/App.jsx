@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { 
-  AlertCircle, Shield, TrendingUp, BarChart2, Filter, RefreshCw, AlertTriangle, 
-  Map as MapIcon, ShieldCheck, Activity, Users, FileText, Search, ChevronLeft, ChevronRight, TrendingDown 
+  AlertCircle, Shield, TrendingUp, BarChart2, Filter, RefreshCw, AlertTriangle, MapPin, Map as MapIcon, ShieldCheck, Activity, Users, FileText, Search, ChevronLeft, ChevronRight, TrendingDown
 } from "lucide-react";
 import MapComponent from "./components/MapComponent";
 import DetailPanel from "./components/DetailPanel";
+import ReportDashboard from "./components/ReportDashboard";
+import PatrolRoutes from "./components/PatrolRoutes";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -186,15 +187,24 @@ export default function App() {
         </button>
         <button 
           onClick={() => setActiveTab("enforcement")} 
-          className={`tab-btn ${activeTab === "enforcement" ? "active" : ""}`}
-        >
-          <ShieldCheck size={18} />
-          Enforcement Effectiveness
+          className={`tab-btn ${activeTab === "enforcement" ? "active" : ""}`}>
+            <ShieldCheck size={18} />
+            Enforcement Effectiveness</button>
+          <button 
+            onClick={() => setActiveTab("reports")} 
+            className={`tab-btn ${activeTab === "reports" ? "active" : ""}`}>
+            <FileText size={18} />
+            Monthly Reports
+          </button>
+        <button 
+          onClick={() => setActiveTab("patrol")} 
+          className={`tab-btn ${activeTab === "patrol" ? "active" : ""}`}>
+          <MapPin size={18} />
+          Patrol Routes
         </button>
         <button 
           onClick={() => setActiveTab("stations")} 
-          className={`tab-btn ${activeTab === "stations" ? "active" : ""}`}
-        >
+          className={`tab-btn ${activeTab === "stations" ? "active" : ""}`}>
           <Activity size={18} />
           Station Workloads
         </button>
@@ -318,10 +328,10 @@ export default function App() {
                     className={`glass hotspot-item ${selectedHotspot?.cluster_id === spot.cluster_id ? "active" : ""}`}
                   >
                     <div className="header-row">
-                      <span className="badge badge-cyan">Rank #{spot.rank}</span>
+                      <span className="badge badge-cyan">Rank #{spot.rank_v3}</span>
                       {spot.anomaly_flag && <span className="badge badge-red" style={{ fontSize: "0.7rem" }}>⚠️ SPIKE</span>}
                       <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-                        Impact: <strong>{Math.round(spot.hotspot_impact_score)}</strong>
+                        Impact: <strong>{Math.round(spot.hotspot_impact_score_v3)}</strong>
                       </span>
                     </div>
                     <div style={{ fontWeight: "600", fontSize: "0.95rem", color: "var(--text-primary)" }}>
@@ -338,13 +348,27 @@ export default function App() {
           </section>
 
           <section>
-            <DetailPanel 
-              selectedHotspot={selectedHotspot} 
-              vehicleTypes={meta.vehicleTypes}
-            />
-          </section>
+          <DetailPanel 
+            selectedHotspot={selectedHotspot} 
+            vehicleTypes={meta.vehicleTypes}
+          />
+        </section>
         </>
       )}
+
+          {/* Tab: Patrol Routes */}
+          {activeTab === "patrol" && (
+            <section style={{ padding: "24px" }}>
+              <PatrolRoutes />
+            </section>
+          )}
+
+          {/* Tab: Monthly Reports */}
+        {activeTab === "reports" && (
+          <section style={{ padding: "24px" }}>
+            <ReportDashboard />
+          </section>
+        )}
 
       {/* Tab: Enforcement Outcomes */}
       {activeTab === "enforcement" && (
@@ -433,7 +457,7 @@ export default function App() {
                 <tbody>
                   {hotspots.slice(0, 100).map((spot) => (
                     <tr key={spot.cluster_id}>
-                      <td style={{ fontWeight: "600" }}>#{spot.rank}</td>
+                      <td style={{ fontWeight: "600" }}>#{spot.rank_v3}</td>
                       <td style={{ fontWeight: "600" }}>{spot.junction !== "No Junction" ? spot.junction : "Open Road stretch"}</td>
                       <td>{spot.police_station}</td>
                       <td>{spot.violation_count_before}</td>

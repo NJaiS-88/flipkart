@@ -22,7 +22,7 @@ export default function MapComponent({ hotspots, selectedHotspot, onSelectHotspo
   // Helper to color circles based on impact score or status
   const getMarkerColor = (spot) => {
     if (spot.anomaly_flag) return "#ef4444"; // Red for anomalies/active spikes
-    const score = spot.hotspot_impact_score;
+    const score = spot.hotspot_impact_score_v3;
     if (score > 10000) return "#ef4444"; // Red
     if (score > 2000) return "#f97316";  // Orange
     if (score > 500) return "#eab308";   // Yellow
@@ -56,7 +56,7 @@ export default function MapComponent({ hotspots, selectedHotspot, onSelectHotspo
             <CircleMarker
               key={spot.cluster_id}
               center={[spot.avg_lat, spot.avg_lon]}
-              radius={getMarkerRadius(spot.hotspot_impact_score)}
+              radius={getMarkerRadius(spot.hotspot_impact_score_v3)}
               fillColor={getMarkerColor(spot)}
               color={isSelected ? "#ffffff" : getMarkerColor(spot)}
               weight={isSelected ? 3 : 1}
@@ -67,13 +67,19 @@ export default function MapComponent({ hotspots, selectedHotspot, onSelectHotspo
             >
               <Popup>
                 <div style={{ color: "#333", fontSize: "0.85rem", lineHeight: "1.4" }}>
-                  <strong>Rank #{spot.rank}</strong>
+                  <strong>Rank #{spot.rank_v3}</strong>
                   <br />
                   <strong>Junction:</strong> {spot.junction || "No Junction"}
+                  {spot.road_name && (
+                    <>
+                      <br />
+                      <strong>OSM Road:</strong> {spot.road_name} ({spot.road_class})
+                    </>
+                  )}
                   <br />
                   <strong>Station:</strong> {spot.police_station}
                   <br />
-                  <strong>Impact Score:</strong> {Math.round(spot.hotspot_impact_score)}
+                  <strong>Impact Score (OSM v3):</strong> {Math.round(spot.hotspot_impact_score_v3)}
                   <br />
                   <strong>Violations Count:</strong> {spot.violation_count}
                   {spot.outcome_flag && (

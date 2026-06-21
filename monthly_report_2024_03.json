@@ -1,0 +1,24 @@
+{
+  "stations": [
+    {
+      "station": "ASHOK NAGAR",
+      "report_year": 2024,
+      "report_month": 3,
+      "report_month_name": "March",
+      "total_violations_this_month": 312,
+      "total_violations_prev_month": 468,
+      "mom_change_str": "down 33.3%",
+      "top_violation_type": "NO PARKING",
+      "violation_type_breakdown": {
+        "NO PARKING": 291,
+        "WRONG PARKING": 19,
+        "PARKING IN A MAIN ROAD": 2
+      },
+      "n_anomaly_hotspots": 0,
+      "n_repeat_offenders_in_zone": 0,
+      "top_hotspot_location": "N/A",
+      "top_hotspots": [],
+      "summary_paragraph": "ASHOK NAGAR recorded 312 parking violations in March 2024 (down 33.3% vs. previous month). The most common violation type was NO PARKING. The highest-impact hotspot was at N/A. Enforcement resources should be prioritised toward the high-impact zones listed below."
+    }
+  ]
+}

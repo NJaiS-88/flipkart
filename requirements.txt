@@ -1,0 +1,17 @@
+# ============================================================
+# requirements.txt — Python dependencies for one.py & two.py
+# ============================================================
+
+# Core data processing (one.py + two.py)
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Machine learning — officer clustering (two.py)
+scikit-learn>=1.3.0
+
+# PDF report generation (one.py)
+reportlab>=4.0.0
+
+# ============================================================
+# Install with:  pip install -r requirements.txt
+# ============================================================

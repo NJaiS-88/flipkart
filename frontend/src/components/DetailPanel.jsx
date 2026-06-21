@@ -78,15 +78,18 @@ export default function DetailPanel({ selectedHotspot, vehicleTypes }) {
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
-            <span className="badge badge-red" style={{ fontSize: "0.8rem" }}>Rank #{selectedHotspot.rank}</span>
+            <span className="badge badge-red" style={{ fontSize: "0.8rem" }}>Rank #{selectedHotspot.rank_v3}</span>
             <h2 style={{ marginTop: "8px", fontSize: "1.4rem", color: "var(--text-primary)" }}>
               {selectedHotspot.junction !== "No Junction" ? selectedHotspot.junction : selectedHotspot.police_station}
             </h2>
           </div>
           <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", textTransform: "uppercase" }}>Impact Score</div>
+            <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", textTransform: "uppercase" }}>Impact Score (OSM v3)</div>
             <div style={{ fontSize: "1.8rem", fontWeight: "700", color: "var(--accent-cyan)" }}>
-              {Math.round(selectedHotspot.hotspot_impact_score)}
+              {Math.round(selectedHotspot.hotspot_impact_score_v3)}
+            </div>
+            <div style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>
+              Base: {Math.round(selectedHotspot.hotspot_impact_score)}
             </div>
           </div>
         </div>
@@ -99,6 +102,24 @@ export default function DetailPanel({ selectedHotspot, vehicleTypes }) {
           <div style={{ fontSize: "1.1rem", fontWeight: "600", marginTop: "4px" }}>
             {selectedHotspot.violation_count.toLocaleString()}
           </div>
+
+          {/* Last Active Date */}
+          {selectedHotspot.last_active_date && (
+            <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+              <Clock size={14} style={{ verticalAlign: "middle", marginRight: "4px" }} />
+              Last Active: {new Date(selectedHotspot.last_active_date).toLocaleDateString()}
+            </div>
+          )}
+
+          {/* Trend Direction Badge */}
+          {selectedHotspot.trend_direction && (
+            <div style={{ marginTop: "4px" }}>
+              <span className={`badge ${selectedHotspot.trend_direction === "increasing" ? "badge-danger" : selectedHotspot.trend_direction === "decreasing" ? "badge-success" : "badge-warning"}`}
+                style={{ textTransform: "capitalize", fontSize: "0.75rem" }}>
+                {selectedHotspot.trend_direction} Trend
+              </span>
+            </div>
+          )}
         </div>
         <div style={{ background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "8px" }}>
           <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>Recurrence Rate</div>
@@ -203,6 +224,37 @@ export default function DetailPanel({ selectedHotspot, vehicleTypes }) {
           <AlertTriangle size={16} color="var(--accent-cyan)" />
           <span><strong>Junction:</strong> {selectedHotspot.junction}</span>
         </div>
+        {selectedHotspot.road_name && (
+          <>
+            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+              <Layers size={16} color="var(--accent-cyan)" />
+              <span><strong>OSM Road Name:</strong> {selectedHotspot.road_name} ({selectedHotspot.road_class})</span>
+            </div>
+            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+              <Layers size={16} color="var(--accent-cyan)" />
+              <span><strong>Road Class Weight:</strong> {selectedHotspot.road_class_weight}x</span>
+            </div>
+            {selectedHotspot.road_dist_m !== null && selectedHotspot.road_dist_m !== undefined && (
+              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                <Layers size={16} color="var(--accent-cyan)" />
+                <span>
+                  <strong>Road Distance Match:</strong> {selectedHotspot.road_dist_m.toFixed(1)}m{" "}
+                  <span style={{ 
+                    fontSize: "0.75rem", 
+                    padding: "2px 6px", 
+                    borderRadius: "4px",
+                    fontWeight: "600",
+                    marginLeft: "6px",
+                    background: selectedHotspot.road_dist_m < 50 ? "rgba(16, 185, 129, 0.15)" : selectedHotspot.road_dist_m < 150 ? "rgba(245, 158, 11, 0.15)" : "rgba(239, 68, 68, 0.15)",
+                    color: selectedHotspot.road_dist_m < 50 ? "var(--accent-green)" : selectedHotspot.road_dist_m < 150 ? "var(--accent-warning)" : "var(--accent-red)"
+                  }}>
+                    {selectedHotspot.road_dist_m < 50 ? "High Confidence" : selectedHotspot.road_dist_m < 150 ? "Medium Confidence" : "Low Confidence"}
+                  </span>
+                </span>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       <hr style={{ borderColor: "var(--border-glass)" }} />

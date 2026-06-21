@@ -1,0 +1,58 @@
+PHASE 2A — SEVERITY WEIGHTS REPORT
+==================================================
+
+MODEL PERFORMANCE
+  Cross-validation AUC (5-fold): 0.556 ± 0.013
+  Test-set AUC:                  0.559
+  Training rows:                 248,691
+  Positive labels (SCITA):       206,136 (82.9%)
+
+CLASSIFICATION REPORT (test set)
+               precision    recall  f1-score   support
+
+     not_sent       0.20      0.54      0.29      8511
+sent_to_scita       0.85      0.56      0.67     41228
+
+     accuracy                           0.55     49739
+    macro avg       0.53      0.55      0.48     49739
+ weighted avg       0.74      0.55      0.61     49739
+
+
+TOP VIOLATION TYPE WEIGHTS (learned)
+  DEFECTIVE NUMBER PLATE                   3.0000
+  DEMANDING EXCESS FARE                    2.8755
+  DOUBLE PARKING                           2.7510
+  FAIL TO USE SAFETY BELTS                 2.6264
+  H T V PROHIBITED                         2.5017
+  NO PARKING                               2.3769
+  OBSTRUCTING DRIVER                       2.2520
+  PARKING IN A MAIN ROAD                   2.1271
+  PARKING NEAR BUSTOP/SCHOOL/HOSPITAL ETC  2.0021
+  PARKING NEAR ROAD CROSSING               1.8770
+
+VEHICLE TYPE WEIGHTS (learned)
+  BUS (BMTC/KSRTC)               3.0000
+  CAR                            2.9061
+  FACTORY BUS                    2.8120
+  GOODS AUTO                     2.7178
+  HGV                            2.6233
+  JEEP                           2.5287
+  LGV                            2.4340
+  LORRY/GOODS VEHICLE            2.3391
+  MAXI-CAB                       2.2441
+  MINI LORRY                     2.1489
+  MOPED                          2.0536
+  MOTOR CYCLE                    1.9582
+  OTHERS                         1.8627
+  PASSENGER AUTO                 1.7671
+  PRIVATE BUS                    1.6714
+  SCHOOL VEHICLE                 1.5757
+  SCOOTER                        1.4799
+  TANKER                         1.3840
+  TEMPO                          1.2880
+  TOURIST BUS                    1.1920
+  TRACTOR                        1.0960
+  VAN                            1.0000
+
+PEAK HOUR MULTIPLIER: 1.0000
+JUNCTION WEIGHT DIRECTION: positive (coefficient: 0.5808)

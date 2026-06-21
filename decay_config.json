@@ -1,0 +1,9 @@
+{
+  "lambda": 0.05,
+  "half_life_weeks": 13.86,
+  "reference_date": "2024-04-08",
+  "trend_months": 6,
+  "score_blend_weight": 0.7,
+  "impact_column_used": "violation_impact",
+  "id_column_used": "cluster_id"
+}
