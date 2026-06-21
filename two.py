@@ -96,21 +96,19 @@ def _get_mappls_distance_matrix(points, access_token):
         coord_strings = [f"{lon},{lat}" for lat, lon in points]
         coords_path = ";".join(coord_strings)
         
-        # Use primary resource with traffic matrix if enabled, or standard
-        url = f"https://route.mappls.com/route/dm/distance_matrix/driving/{coords_path}"
-        params = {
-            "rtype": "0",
-            "region": "ind",
-            "access_token": access_token
-        }
+        # CORRECT endpoint: token in URL path, no query params needed
+        # Format: https://apis.mappls.com/advancedmaps/v1/{token}/distance_matrix/driving/{coords}
+        url = f"https://apis.mappls.com/advancedmaps/v1/{access_token}/distance_matrix/driving/{coords_path}"
         
-        response = requests.get(url, params=params, timeout=8)
+        response = requests.get(url, timeout=8)
         if response.status_code == 200:
             res_data = response.json()
-            if "distances" in res_data and "durations" in res_data:
-                # Distances are usually in meters, Durations in seconds
-                m_dists = res_data["distances"]
-                s_durs = res_data["durations"]
+            # Response format: { results: { distances: [[...]], durations: [[...]], code: "Ok" } }
+            results = res_data.get("results", {})
+            if "distances" in results and "durations" in results:
+                # Distances in meters, Durations in seconds
+                m_dists = results["distances"]
+                s_durs = results["durations"]
                 
                 for i in range(n):
                     for j in range(n):

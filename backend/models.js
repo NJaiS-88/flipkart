@@ -51,7 +51,13 @@ const HotspotSchema = new mongoose.Schema({
   avg_weekly: { type: Number, default: null },
   trend: { type: String, default: "" },
   trend_slope: { type: Number, default: null },
-  predicted_next_week: { type: Number, default: null }
+  predicted_next_week: { type: Number, default: null },
+
+  // Live Traffic (MapmyIndia / Mappls integration)
+  congestion_level: { type: String, default: "" },           // "low" | "moderate" | "heavy"
+  congestion_multiplier: { type: Number, default: 1.0 },    // 1.0 | 1.2 | 1.5
+  congestion_speed_kmh: { type: Number, default: null },    // real road speed from Mappls API
+  congestion_updated_at: { type: Date, default: null }      // timestamp of last traffic sync
 }, { timestamps: true });
 
 const ViolationSchema = new mongoose.Schema({

@@ -7,6 +7,7 @@ import path from "path";
 import { execFile } from "child_process";
 import { fileURLToPath } from "url";
 import { Hotspot, Violation, RepeatOffender, StationLoad, Report } from "./models.js";
+import cron from "node-cron";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -355,6 +356,114 @@ app.post("/api/reports/generate", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// 11. GET /api/traffic-token - Return a fresh Mappls OAuth token for frontend map overlays
+app.get("/api/traffic-token", async (req, res) => {
+  try {
+    const clientId = process.env.MAPMYINDIA_CLIENT_ID;
+    const clientSecret = process.env.MAPMYINDIA_CLIENT_SECRET;
+    if (!clientId || !clientSecret) {
+      return res.status(503).json({ error: "MapmyIndia credentials not configured" });
+    }
+    const authRes = await fetch("https://outpost.mappls.com/api/security/oauth/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `grant_type=client_credentials&client_id=${encodeURIComponent(clientId)}&client_secret=${encodeURIComponent(clientSecret)}`
+    });
+    if (!authRes.ok) return res.status(502).json({ error: "Failed to get Mappls token" });
+    const data = await authRes.json();
+    res.json({ token: data.access_token, expires_in: data.expires_in });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// CORRECT MAPPLS ENDPOINT: https://apis.mappls.com/advancedmaps/v1/{token}/distance_matrix/driving/{coords}
+async function runTrafficSync() {
+  try {
+    console.log("[Traffic Sync] Running MapmyIndia traffic sync for hotspots...");
+    const clientId = process.env.MAPMYINDIA_CLIENT_ID;
+    const clientSecret = process.env.MAPMYINDIA_CLIENT_SECRET;
+    if (!clientId || !clientSecret) {
+      console.log("[Traffic Sync] Missing MapmyIndia credentials. Skipping.");
+      return;
+    }
+
+    // 1. Get OAuth Token
+    const authResponse = await fetch("https://outpost.mappls.com/api/security/oauth/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `grant_type=client_credentials&client_id=${encodeURIComponent(clientId)}&client_secret=${encodeURIComponent(clientSecret)}`
+    });
+    if (!authResponse.ok) { console.log("[Traffic Sync] Auth failed."); return; }
+    const authData = await authResponse.json();
+    const token = authData.access_token;
+    console.log("[Traffic Sync] Token obtained.");
+
+    // 2. Get top 20 hotspots
+    const hotspots = await Hotspot.find({ avg_lat: { $exists: true }, avg_lon: { $exists: true } })
+      .sort({ rank_v3: 1 }).limit(20);
+    
+    let updated = 0;
+    // 3. For each hotspot, call Mappls distance matrix API (CORRECT endpoint)
+    for (const hotspot of hotspots) {
+      if (!hotspot.avg_lat || !hotspot.avg_lon) continue;
+      
+      const lat1 = parseFloat(hotspot.avg_lat);
+      const lon1 = parseFloat(hotspot.avg_lon);
+      const lat2 = lat1 + 0.005; // ~500m north
+      const lon2 = lon1;
+      
+      // CORRECT URL: token in path, coords as lon,lat
+      const coords = `${lon1},${lat1};${lon2},${lat2}`;
+      const url = `https://apis.mappls.com/advancedmaps/v1/${token}/distance_matrix/driving/${coords}`;
+      
+      try {
+        const apiRes = await fetch(url);
+        if (apiRes.ok) {
+          const data = await apiRes.json();
+          // Response: { results: { distances: [[0, 809.8]], durations: [[0, 177.1]], code: "Ok" } }
+          const mDist = data.results?.distances?.[0]?.[1];
+          const sDur  = data.results?.durations?.[0]?.[1];
+          
+          if (mDist > 0 && sDur > 0) {
+            const km = mDist / 1000;
+            const hours = sDur / 3600;
+            const speed = km / hours;  // km/h
+            
+            let congestion_level = "low";
+            let congestion_multiplier = 1.0;
+            if (speed < 12.0) { congestion_level = "heavy"; congestion_multiplier = 1.5; }
+            else if (speed < 20.0) { congestion_level = "moderate"; congestion_multiplier = 1.2; }
+            
+            hotspot.congestion_level = congestion_level;
+            hotspot.congestion_multiplier = congestion_multiplier;
+            hotspot.congestion_speed_kmh = Math.round(speed * 10) / 10;
+            hotspot.congestion_updated_at = new Date();
+            await hotspot.save();
+            updated++;
+            console.log(`[Traffic Sync] #${hotspot.rank_v3}: ${speed.toFixed(1)} km/h → ${congestion_level}`);
+          }
+        } else {
+          console.log(`[Traffic Sync] API error ${apiRes.status} for rank #${hotspot.rank_v3}`);
+        }
+      } catch (e) {
+        console.log(`[Traffic Sync] fetch error for rank #${hotspot.rank_v3}: ${e.message}`);
+      }
+      // 300ms delay to avoid rate limiting
+      await new Promise(r => setTimeout(r, 300));
+    }
+    console.log(`[Traffic Sync] Done. Updated ${updated}/${hotspots.length} hotspots.`);
+  } catch (err) {
+    console.error("[Traffic Sync] Error:", err.message);
+  }
+}
+
+// Run sync every 10 minutes
+cron.schedule("*/10 * * * *", runTrafficSync);
+
+// Also run once 5 seconds after server starts (so you see it immediately)
+setTimeout(runTrafficSync, 5000);
 
 // Start server
 const PORT_NUM = process.env.PORT || 5000;
