@@ -6,7 +6,7 @@ const HotspotSchema = new mongoose.Schema({
 });
 const Hotspot = mongoose.model("Hotspot", HotspotSchema);
 
-const MONGO_URI = "mongodb+srv://jaisumanthnekkanti_db_user:83ptCXOX8id97u9d@cluster0.3xwgowm.mongodb.net/?appName=Cluster0";
+const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/parking_db";
 
 async function main() {
   await mongoose.connect(MONGO_URI);

@@ -1,0 +1,25 @@
+{
+  "stations": [
+    {
+      "station": "ADUGODI",
+      "report_year": 2024,
+      "report_month": 2,
+      "report_month_name": "February",
+      "total_violations_this_month": 661,
+      "total_violations_prev_month": 371,
+      "mom_change_str": "up 78.2%",
+      "top_violation_type": "NO PARKING",
+      "violation_type_breakdown": {
+        "NO PARKING": 517,
+        "WRONG PARKING": 136,
+        "PARKING ON FOOTPATH": 5,
+        "PARKING IN A MAIN ROAD": 3
+      },
+      "n_anomaly_hotspots": 0,
+      "n_repeat_offenders_in_zone": 0,
+      "top_hotspot_location": "N/A",
+      "top_hotspots": [],
+      "summary_paragraph": "ADUGODI recorded 661 parking violations in February 2024 (up 78.2% vs. previous month). The most common violation type was NO PARKING. The highest-impact hotspot was at N/A. Enforcement resources should be prioritised toward the high-impact zones listed below."
+    }
+  ]
+}
