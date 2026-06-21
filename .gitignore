@@ -1,30 +1,57 @@
-# Dependencies
+# ── Node ──────────────────────────────────────────────────
 node_modules/
-/dist
-/dist-ssr
+dist/
+dist-ssr/
 *.local
 
-# Large datasets (exclude to prevent GitHub push errors)
-violations_scored (1).csv
-hotspots (1).csv
-hotspots (1).geojson
+# ── Environment variables ──────────────────────────────────
+.env
+.env.local
+.env.production
+.env.development
+backend/.env
+
+# ── Python ────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+venv/
+.venv/
+env/
+*.egg-info/
+
+# ── Large raw data files (not committed — seed from local) ──
+"violations_scored (1).csv"
+violations_scored_v2.csv
+"hotspots (1).csv"
+"hotspots (1).geojson"
 repeat_offenders.csv
 enforcement_outcome_report.csv
 hotspot_anomalies.csv
 hotspot_forecast.csv
 station_load.csv
+hotspots_explained.csv
+hotspots_time_decay.csv
 
-# Environment variables
-.env
-.env.production
-.env.development
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# ── Generated output files ─────────────────────────────────
+monthly_report_*.json
+monthly_report_*.txt
+patrol_routes_afternoon.json
+patrol_routes_afternoon.csv
+patrol_routes_afternoon.txt
+patrol_routes_evening.json
+patrol_routes_evening.csv
+patrol_routes_evening.txt
+patrol_routes_night.json
+patrol_routes_night.csv
+patrol_routes_night.txt
+report_*.pdf
 *.log
 
-# System Files
+# ── System ────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
+{

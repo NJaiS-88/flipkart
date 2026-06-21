@@ -15,7 +15,10 @@ warnings.filterwarnings("ignore")
 # CONFIG
 # ---------------------------------------------------------------------------
 
-OUT_DIR = os.path.dirname(os.path.abspath(__file__))
+# DATA_DIR: where input CSV files live (set via env var on Render with mounted disk)
+# OUT_DIR: where output JSON/CSV/TXT route files are written
+DATA_DIR = os.environ.get("DATA_DIR", os.path.dirname(os.path.abspath(__file__)))
+OUT_DIR  = os.environ.get("OUT_DIR",  os.path.dirname(os.path.abspath(__file__)))
 DWELL_MINUTES = 20
 AVG_SPEED_KMPH = 25.0
 SCORE_COL_PRIORITY = [
@@ -270,7 +273,7 @@ def main(
 if __name__ == "__main__":
     # Usage: python two.py [zone_filter] [n_officers] [top_n] [shift_name]
     #   shift_name: morning | afternoon | evening | night
-    hotspots_path = os.path.join(OUT_DIR, "hotspots_with_road_context_v3.csv")
+    hotspots_path = os.path.join(DATA_DIR, "hotspots_with_road_context_v3.csv")
 
     zone_filter    = None
     n_officers     = 3

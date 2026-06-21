@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: parking-hotspot-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        sync: false          # Set this manually in Render dashboard (MongoDB Atlas URI)
+      - key: FRONTEND_URL
+        sync: false          # Set to your Vercel URL: https://your-app.vercel.app
+      - key: PYTHON_PATH
+        value: python3       # Render has python3 available by default
+    autoDeploy: true

@@ -16,8 +16,23 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/parking_db";
+const PYTHON_BIN = process.env.PYTHON_PATH || "python";
 
-app.use(cors());
+// CORS — allow both localhost dev and production Vercel URL
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, cb) => {
+    // allow requests with no origin (e.g. mobile/curl) or from allowed list
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    cb(new Error(`CORS blocked: ${origin}`));
+  },
+  credentials: true,
+}));
 app.use(express.json());
 
 // Connect to MongoDB
@@ -235,7 +250,7 @@ app.post("/api/patrol-routes", async (req, res) => {
       shift,
     ];
 
-    execFile("python", args, { cwd: path.resolve(__dirname, "../") }, (error, stdout, stderr) => {
+    execFile(PYTHON_BIN, args, { cwd: path.resolve(__dirname, "../"), env: { ...process.env } }, (error, stdout, stderr) => {
       if (error) {
         console.error("two.py error:", stderr);
         return res.status(500).json({ error: stderr || error.message });
@@ -298,7 +313,7 @@ app.post("/api/reports/generate", async (req, res) => {
     const scriptPath = path.resolve(__dirname, "../one.py");
     const args = [scriptPath, station, String(year), String(month)];
 
-    execFile("python", args, { cwd: path.resolve(__dirname, "../") }, async (error, stdout, stderr) => {
+    execFile(PYTHON_BIN, args, { cwd: path.resolve(__dirname, "../"), env: { ...process.env } }, async (error, stdout, stderr) => {
       if (error) {
         console.error("Python error:", stderr);
         return res.status(500).json({ error: stderr || error.message });

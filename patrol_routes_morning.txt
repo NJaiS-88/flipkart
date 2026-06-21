@@ -1,47 +1,47 @@
 PATROL BRIEFING — MORNING SHIFT
-Generated: 2026-06-21 08:05
-Shift window: 07:00 – 12:00
-Zone: All zones
+Generated: 2026-06-21 16:43
+Shift window: 07:00 - 12:00
+Zone: Bellandur
 ========================================================
 
 OFFICER 1
-  Total stops:    11
-  Total distance: 5.8 km
-  Est. finish:    10:50
+  Total stops:    1
+  Total distance: 0 km
+  Est. finish:    07:20
 
-  #    ETA           LAT         LON    SCORE
-  ---- ------ ---------- ----------- --------
-  1    07:00    12.98114    77.61016  2390.52
-  2    07:20    12.98105    77.61037  1058.52
-  3    07:41    12.98400    77.60361  1526.98
-  4    08:02    12.98116    77.59847  1208.43
-  5    08:27    12.97355    77.57931  1019.02
-  6    08:47    12.97639    77.57742  1067.82
-  7    09:07    12.97734    77.57653  1131.42
-  8    09:30    12.96460    77.57613  1151.69
-  9    09:50    12.96453    77.57650  1217.52
-  10   10:10    12.96442    77.57708  1143.88
-  11   10:30    12.96400    77.57685  1791.75
-  Depart last stop by: 10:50
+  #    ETA           LAT         LON    SCORE  LOCATION
+  ---- ------ ---------- ----------- --------  --------------------
+  1    07:00    12.92979    77.69495   134.06  Sarjapur Road N
+  Depart last stop by: 07:20
 
 OFFICER 2
-  Total stops:    3
-  Total distance: 0.91 km
-  Est. finish:    08:02
+  Total stops:    13
+  Total distance: 2.62 km
+  Est. finish:    11:24
 
-  #    ETA           LAT         LON    SCORE
-  ---- ------ ---------- ----------- --------
-  1    07:00    12.93975    77.69556  1545.93
-  2    07:22    12.93378    77.69087  1455.21
-  3    07:42    12.93323    77.69123  1144.88
-  Depart last stop by: 08:02
+  #    ETA           LAT         LON    SCORE  LOCATION
+  ---- ------ ---------- ----------- --------  --------------------
+  1    07:00    12.92623    77.67677   412.64  Sarjapur Road S
+  2    07:20    12.92621    77.67648   167.84  Sarjapur Road S
+  3    07:40    12.92586    77.67675   137.07  Sarjapur Road S
+  4    08:00    12.92571    77.67618   255.92  Sarjapur Road S
+  5    08:20    12.92684    77.67888   333.19  Sarjapur Road S
+  6    08:40    12.92698    77.67920   113.88  Sarjapur Road S
+  7    09:00    12.92722    77.67951   350.95  Sarjapur Road S
+  8    09:20    12.92736    77.68009   365.62  Sarjapur Road S
+  9    09:40    12.92737    77.68054   396.33  Sarjapur Road S
+  10   10:00    12.92779    77.68070   296.96  Sarjapur Road S
+  11   10:20    12.92790    77.67971   170.19  Sarjapur Road S
+  12   10:40    12.92830    77.67972   145.91  Sarjapur Road S
+  13   11:04    12.92077    77.66537   320.01  ORR SE
+  Depart last stop by: 11:24
 
 OFFICER 3
   Total stops:    1
   Total distance: 0 km
   Est. finish:    07:20
 
-  #    ETA           LAT         LON    SCORE
-  ---- ------ ---------- ----------- --------
-  1    07:00    13.07128    77.58801  1113.88
+  #    ETA           LAT         LON    SCORE  LOCATION
+  ---- ------ ---------- ----------- --------  --------------------
+  1    07:00    12.89980    77.67543   119.54  side street (>800m from major road)
   Depart last stop by: 07:20

@@ -13,7 +13,10 @@ warnings.filterwarnings("ignore")
 # CONFIG
 # ---------------------------------------------------------------------------
 
-OUT_DIR = os.path.dirname(os.path.abspath(__file__))
+# DATA_DIR: where input CSV files live (set via env var on Render with mounted disk)
+# OUT_DIR: where output JSON/PDF files are written
+DATA_DIR = os.environ.get("DATA_DIR", os.path.dirname(os.path.abspath(__file__)))
+OUT_DIR  = os.environ.get("OUT_DIR",  os.path.dirname(os.path.abspath(__file__)))
 TOP_HOTSPOTS_PER_STATION = 5
 MIN_VIOLATIONS_FOR_STATION = 10   # skip stations with fewer violations in the month
 
@@ -320,8 +323,8 @@ def main(violations_path, hotspots_path, report_year=None, report_month=None,
 if __name__ == "__main__":
     # Usage: python one.py [station] [year] [month]
     #   or : python one.py  (uses defaults)
-    violations_path = os.path.join(OUT_DIR, "violations_scored (1).csv")
-    hotspots_path   = os.path.join(OUT_DIR, "hotspots_with_road_context_v3.csv")
+    violations_path = os.path.join(DATA_DIR, "violations_scored (1).csv")
+    hotspots_path   = os.path.join(DATA_DIR, "hotspots_with_road_context_v3.csv")
 
     filter_station = None
     report_year    = None
