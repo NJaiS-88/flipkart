@@ -1,0 +1,16 @@
+feat: replace Mappls traffic tile with TomTom live traffic overlay
+
+- frontend/src/components/MapComponent.jsx:
+  * Replace Mappls tile layer with TomTom Traffic Flow tiles
+    (green=free flow, yellow=slow, orange=queuing, red=stationary)
+  * Add TomTom Traffic Incidents tile layer (accidents/roadworks icons)
+  * Both layers are optional checkboxes in the map control panel
+  * Read API key from VITE_TOMTOM_KEY env var (Vite prefix)
+  * Show helpful message + link if key is not yet configured
+  * Keep MapmyIndia congestion data (circle colors + legend) intact
+  * TomTom URL format:
+    flow: apis.tomtom.com/traffic/map/4/tile/flow/relative0/{z}/{x}/{y}.png
+    incidents: api.tomtom.com/traffic/map/4/tile/incidents/s3/{z}/{x}/{y}.png
+
+- frontend/.env.example:
+  * Add VITE_TOMTOM_KEY placeholder with comment and signup link

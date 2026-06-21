@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-21T17:40:41.981534",
+  "generated_at": "2026-06-21T18:03:16.516326",
   "shift": "morning",
   "n_officers": 3,
   "top_n_hotspots": 15,
@@ -13,9 +13,9 @@
       "shift_start": "07:00",
       "shift_end": "12:00",
       "n_stops": 6,
-      "total_km": 2.14,
-      "total_patrol_minutes": 123,
-      "estimated_finish": "09:03",
+      "total_km": 2.16,
+      "total_patrol_minutes": 125,
+      "estimated_finish": "09:05",
       "stops": [
         {
           "stop_order": 1,
@@ -50,7 +50,7 @@
           "eta": "07:23",
           "depart": "07:43",
           "dwell_minutes": 20,
-          "travel_km_from_prev": 1.374,
+          "travel_km_from_prev": 1.392,
           "travel_min_from_prev": 3
         },
         {
@@ -79,15 +79,15 @@
           "police_station": "",
           "lat": 13.048956,
           "lon": 77.496934,
-          "score": 26.6401,
+          "score": 31.9681,
           "raw_score": 26.6401,
-          "congestion_level": "low",
-          "congestion_multiplier": 1.0,
-          "eta": "08:03",
-          "depart": "08:23",
+          "congestion_level": "moderate",
+          "congestion_multiplier": 1.2,
+          "eta": "08:04",
+          "depart": "08:24",
           "dwell_minutes": 20,
           "travel_km_from_prev": 0.271,
-          "travel_min_from_prev": 0
+          "travel_min_from_prev": 1
         },
         {
           "stop_order": 5,
@@ -101,8 +101,8 @@
           "raw_score": 14.0933,
           "congestion_level": "low",
           "congestion_multiplier": 1.0,
-          "eta": "08:23",
-          "depart": "08:43",
+          "eta": "08:24",
+          "depart": "08:44",
           "dwell_minutes": 20,
           "travel_km_from_prev": 0.159,
           "travel_min_from_prev": 0
@@ -115,15 +115,15 @@
           "police_station": "",
           "lat": 13.047485,
           "lon": 77.500883,
-          "score": 36.25,
+          "score": 43.5,
           "raw_score": 36.25,
-          "congestion_level": "low",
-          "congestion_multiplier": 1.0,
-          "eta": "08:43",
-          "depart": "09:03",
+          "congestion_level": "moderate",
+          "congestion_multiplier": 1.2,
+          "eta": "08:45",
+          "depart": "09:05",
           "dwell_minutes": 20,
           "travel_km_from_prev": 0.303,
-          "travel_min_from_prev": 0
+          "travel_min_from_prev": 1
         }
       ]
     },
@@ -164,8 +164,8 @@
       "shift_end": "12:00",
       "n_stops": 8,
       "total_km": 5.32,
-      "total_patrol_minutes": 170,
-      "estimated_finish": "09:50",
+      "total_patrol_minutes": 172,
+      "estimated_finish": "09:52",
       "stops": [
         {
           "stop_order": 1,
@@ -200,7 +200,7 @@
           "eta": "07:21",
           "depart": "07:41",
           "dwell_minutes": 20,
-          "travel_km_from_prev": 0.539,
+          "travel_km_from_prev": 0.538,
           "travel_min_from_prev": 1
         },
         {
@@ -269,11 +269,11 @@
           "raw_score": 35.1108,
           "congestion_level": "low",
           "congestion_multiplier": 1.0,
-          "eta": "08:44",
-          "depart": "09:04",
+          "eta": "08:45",
+          "depart": "09:05",
           "dwell_minutes": 20,
           "travel_km_from_prev": 1.241,
-          "travel_min_from_prev": 2
+          "travel_min_from_prev": 3
         },
         {
           "stop_order": 7,
@@ -283,15 +283,15 @@
           "police_station": "",
           "lat": 13.045419,
           "lon": 77.521811,
-          "score": 28.7437,
+          "score": 34.4925,
           "raw_score": 28.7437,
-          "congestion_level": "low",
-          "congestion_multiplier": 1.0,
-          "eta": "09:05",
-          "depart": "09:25",
+          "congestion_level": "moderate",
+          "congestion_multiplier": 1.2,
+          "eta": "09:07",
+          "depart": "09:27",
           "dwell_minutes": 20,
           "travel_km_from_prev": 0.657,
-          "travel_min_from_prev": 1
+          "travel_min_from_prev": 2
         },
         {
           "stop_order": 8,
@@ -305,8 +305,8 @@
           "raw_score": 13.4214,
           "congestion_level": "low",
           "congestion_multiplier": 1.0,
-          "eta": "09:30",
-          "depart": "09:50",
+          "eta": "09:32",
+          "depart": "09:52",
           "dwell_minutes": 20,
           "travel_km_from_prev": 2.283,
           "travel_min_from_prev": 5
