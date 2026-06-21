@@ -383,7 +383,7 @@ app.get("/api/traffic-token", async (req, res) => {
 async function runTrafficSync() {
   try {
     const hotspots = await Hotspot.find({ avg_lat: { $exists: true }, avg_lon: { $exists: true } })
-      .sort({ rank_v3: 1 }).limit(20);
+      .sort({ rank_v3: 1 }).limit(50);
 
     const clientId = process.env.MAPMYINDIA_CLIENT_ID;
     const clientSecret = process.env.MAPMYINDIA_CLIENT_SECRET;

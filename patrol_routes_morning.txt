@@ -1,47 +1,47 @@
 PATROL BRIEFING — MORNING SHIFT
-Generated: 2026-06-21 18:03
+Generated: 2026-06-21 18:23
 Shift window: 07:00 - 12:00
-Zone: Chikkabanavara
+Zone: Devanahalli Airport
 ========================================================
 
 OFFICER 1
-  Total stops:    6
-  Total distance: 2.16 km
-  Est. finish:    09:05
+  Total stops:    10
+  Total distance: 0.73 km
+  Est. finish:    10:20
 
   #    ETA           LAT         LON    SCORE  LOCATION
   ---- ------ ---------- ----------- --------  --------------------
-  1    07:00    13.05431    77.48251    36.90  side street (>800m from major road)
-  2    07:23    13.05027    77.49449    25.50  side street (>800m from major road)
-  3    07:43    13.05018    77.49476    23.52  side street (>800m from major road)
-  4    08:04    13.04896    77.49693    31.97  side street (>800m from major road)
-  5    08:24    13.04871    77.49838    14.09  side street (>800m from major road)
-  6    08:45    13.04748    77.50088    43.50  side street (>800m from major road)
-  Depart last stop by: 09:05
+  1    07:00    13.18987    77.68062    79.60  side street (>800m from major road)
+  2    07:20    13.19035    77.68070    61.64  side street (>800m from major road)
+  3    07:40    13.19054    77.68057    29.61  side street (>800m from major road)
+  4    08:00    13.19087    77.68068    54.18  side street (>800m from major road)
+  5    08:20    13.19191    77.68092    26.32  side street (>800m from major road)
+  6    08:40    13.18928    77.68052    54.53  side street (>800m from major road)
+  7    09:00    13.18878    77.68045    78.04  side street (>800m from major road)
+  8    09:20    13.18824    77.68032    48.06  side street (>800m from major road)
+  9    09:40    13.18817    77.68054    29.97  side street (>800m from major road)
+  10   10:00    13.18773    77.68025    52.00  side street (>800m from major road)
+  Depart last stop by: 10:20
 
 OFFICER 2
+  Total stops:    4
+  Total distance: 0.73 km
+  Est. finish:    08:21
+
+  #    ETA           LAT         LON    SCORE  LOCATION
+  ---- ------ ---------- ----------- --------  --------------------
+  1    07:00    13.24517    77.71280    23.25  side street (>800m from major road)
+  2    07:20    13.24481    77.71316    21.97  side street (>800m from major road)
+  3    07:40    13.24418    77.71460    21.00  side street (>800m from major road)
+  4    08:01    13.24857    77.71557    11.89  side street (>800m from major road)
+  Depart last stop by: 08:21
+
+OFFICER 3
   Total stops:    1
   Total distance: 0 km
   Est. finish:    07:20
 
   #    ETA           LAT         LON    SCORE  LOCATION
   ---- ------ ---------- ----------- --------  --------------------
-  1    07:00    13.08520    77.48647    29.83  side street (>800m from major road)
+  1    07:00    13.19643    77.70497    10.68  side street (>800m from major road)
   Depart last stop by: 07:20
-
-OFFICER 3
-  Total stops:    8
-  Total distance: 5.32 km
-  Est. finish:    09:52
-
-  #    ETA           LAT         LON    SCORE  LOCATION
-  ---- ------ ---------- ----------- --------  --------------------
-  1    07:00    13.05500    77.50761    64.59  side street (>800m from major road)
-  2    07:21    13.05016    77.50775    13.36  side street (>800m from major road)
-  3    07:42    13.04576    77.50733    15.26  side street (>800m from major road)
-  4    08:02    13.04548    77.50772    19.14  side street (>800m from major road)
-  5    08:22    13.04533    77.50827    22.53  side street (>800m from major road)
-  6    08:45    13.04043    77.51856    35.11  side street (>800m from major road)
-  7    09:07    13.04542    77.52181    34.49  Tumkur Road N
-  8    09:32    13.05988    77.50685    13.42  side street (>800m from major road)
-  Depart last stop by: 09:52
