@@ -81,7 +81,18 @@ export default function MapComponent({ hotspots, selectedHotspot, onSelectHotspo
                   <br />
                   <strong>Impact Score (OSM v3):</strong> {Math.round(spot.hotspot_impact_score_v3)}
                   <br />
-                  <strong>Violations Count:</strong> {spot.violation_count}
+                  {spot.congestion_level && (
+                    <>
+                      <br />
+                      <strong>Traffic Status:</strong>{" "}
+                      <span style={{ 
+                        color: spot.congestion_level === "heavy" ? "#ef4444" : spot.congestion_level === "moderate" ? "#f97316" : "#22c55e", 
+                        fontWeight: "bold" 
+                      }}>
+                        🚦 {spot.congestion_level.toUpperCase()} ({spot.congestion_multiplier || 1.0}x)
+                      </span>
+                    </>
+                  )}
                   {spot.outcome_flag && (
                     <>
                       <br />

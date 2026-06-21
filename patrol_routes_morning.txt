@@ -1,28 +1,47 @@
 PATROL BRIEFING — MORNING SHIFT
-Generated: 2026-06-21 17:35
+Generated: 2026-06-21 17:40
 Shift window: 07:00 - 12:00
-Zone: All zones
+Zone: Chikkabanavara
 ========================================================
 
 OFFICER 1
-  Total stops:    2
-  Total distance: 0.84 km
-  Est. finish:    07:42
+  Total stops:    6
+  Total distance: 2.14 km
+  Est. finish:    09:03
 
   #    ETA           LAT         LON    SCORE  LOCATION
   ---- ------ ---------- ----------- --------  --------------------
-  1    07:00    12.93975    77.69556  3091.86  Sarjapur Road N
-  2    07:22    12.93378    77.69087  2910.42  Sarjapur Road N
-  Depart last stop by: 07:42
+  1    07:00    13.05431    77.48251    36.90  side street (>800m from major road)
+  2    07:23    13.05027    77.49449    25.50  side street (>800m from major road)
+  3    07:43    13.05018    77.49476    23.52  side street (>800m from major road)
+  4    08:03    13.04896    77.49693    26.64  side street (>800m from major road)
+  5    08:23    13.04871    77.49838    14.09  side street (>800m from major road)
+  6    08:43    13.04748    77.50088    36.25  side street (>800m from major road)
+  Depart last stop by: 09:03
 
 OFFICER 2
-  Total stops:    3
-  Total distance: 9.61 km
-  Est. finish:    08:22
+  Total stops:    1
+  Total distance: 0 km
+  Est. finish:    07:20
 
   #    ETA           LAT         LON    SCORE  LOCATION
   ---- ------ ---------- ----------- --------  --------------------
-  1    07:00    12.98114    77.61016  3585.77  Nrupathunga Road
-  2    07:29    12.96400    77.57685  2687.63  MC Modi Road
-  3    08:02    13.00866    77.55444  2323.10  Tumkur Road
-  Depart last stop by: 08:22
+  1    07:00    13.08520    77.48647    29.83  side street (>800m from major road)
+  Depart last stop by: 07:20
+
+OFFICER 3
+  Total stops:    8
+  Total distance: 5.32 km
+  Est. finish:    09:50
+
+  #    ETA           LAT         LON    SCORE  LOCATION
+  ---- ------ ---------- ----------- --------  --------------------
+  1    07:00    13.05500    77.50761    64.59  side street (>800m from major road)
+  2    07:21    13.05016    77.50775    13.36  side street (>800m from major road)
+  3    07:42    13.04576    77.50733    15.26  side street (>800m from major road)
+  4    08:02    13.04548    77.50772    19.14  side street (>800m from major road)
+  5    08:22    13.04533    77.50827    22.53  side street (>800m from major road)
+  6    08:44    13.04043    77.51856    35.11  side street (>800m from major road)
+  7    09:05    13.04542    77.52181    28.74  Tumkur Road N
+  8    09:30    13.05988    77.50685    13.42  side street (>800m from major road)
+  Depart last stop by: 09:50

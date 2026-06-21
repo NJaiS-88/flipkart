@@ -127,6 +127,22 @@ export default function DetailPanel({ selectedHotspot, vehicleTypes }) {
             {Math.round(selectedHotspot.recurrence_rate * 100)}%
           </div>
         </div>
+        <div style={{ 
+          background: selectedHotspot.congestion_level === "heavy" ? "rgba(239, 68, 68, 0.05)" : selectedHotspot.congestion_level === "moderate" ? "rgba(249, 115, 22, 0.05)" : "rgba(255,255,255,0.02)", 
+          border: selectedHotspot.congestion_level ? `1px solid ${selectedHotspot.congestion_level === "heavy" ? "rgba(239, 68, 68, 0.2)" : "rgba(249, 115, 22, 0.2)"}` : "none",
+          padding: "12px", 
+          borderRadius: "8px" 
+        }}>
+          <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>MapmyIndia Traffic</div>
+          <div style={{ fontSize: "1.1rem", fontWeight: "600", marginTop: "4px", color: selectedHotspot.congestion_level === "heavy" ? "#fca5a5" : selectedHotspot.congestion_level === "moderate" ? "#fed7aa" : "var(--accent-green)" }}>
+            🚦 {selectedHotspot.congestion_level ? selectedHotspot.congestion_level.toUpperCase() : "NORMAL"}
+          </div>
+          {selectedHotspot.congestion_multiplier && (
+            <div style={{ fontSize: "0.7rem", color: "var(--text-secondary)", marginTop: "2px" }}>
+              Congestion Weight: {selectedHotspot.congestion_multiplier}x
+            </div>
+          )}
+        </div>
         {selectedHotspot.predicted_next_week !== undefined && selectedHotspot.predicted_next_week !== null && (
           <div style={{ background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "8px" }}>
             <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>Forecast (Next Week)</div>
