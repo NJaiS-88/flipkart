@@ -1,0 +1,168 @@
+================================================================================
+          BENGALURU TRAFFIC PATROL & PARKING HOTSPOT INSPECTOR
+             Complete Step-by-Step Installation & Run Manual
+================================================================================
+
+1. INTRODUCTION & SYSTEM OVERVIEW
+----------------------------------
+The Bengaluru Traffic Patrol & Parking Hotspot Inspector is an advanced MERN stack
+(MongoDB, Express, React, Node.js) web application combined with Python Machine
+Learning and Geospatial Optimization.
+
+It enables traffic enforcement divisions to:
+* Visualize high-density parking violation hotspot clusters on an interactive dark map.
+* Analyze violation breakdowns, trends, and repeat offender data.
+* Retrieve real-time road congestion overlays and traffic incidents via TomTom.
+* Run background synchronization daemons using MapmyIndia or TomTom routing API fallbacks.
+* Generate Traveling Salesperson (TSP) optimized patrol routes with K-Means officer clustering.
+* Compile monthly station-level enforcement reports in high-resolution PDF formats.
+
+--------------------------------------------------------------------------------
+
+2. PREREQUISITES & ENVIRONMENT REQUIREMENTS
+--------------------------------------------
+Before launching the application, ensure your machine meets the following criteria:
+
+* Node.js: v18.0.0 or higher (contains native fetch support)
+* npm: v9.0.0 or higher
+* Python: v3.10.0 or higher (required for ML, routing, and PDF reports)
+* MongoDB: v6.0.0 or higher (local installation or MongoDB Atlas cloud connection URI)
+* Internet Connection: Active connection to load Leaflet base map tiles and sync API data.
+
+--------------------------------------------------------------------------------
+
+3. ENVIRONMENT CONFIGURATION (.env)
+------------------------------------
+You must configure configuration values for both backend and frontend.
+
+3.1 BACKEND CONFIGURATION
+Create a file named `.env` inside the `backend` directory (path: `backend/.env`):
+--------------------------------------------------------------------
+MONGO_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/parking_db
+PORT=5000
+FRONTEND_URL=http://localhost:5173
+PYTHON_PATH=python
+MAPMYINDIA_CLIENT_ID=your_mappls_client_id
+MAPMYINDIA_CLIENT_SECRET=your_mappls_client_secret
+--------------------------------------------------------------------
+* NOTE: If MapmyIndia credentials are not present, the server automatically
+  falls back to the TomTom API to sync live hotspot traffic conditions.
+
+3.2 FRONTEND CONFIGURATION
+Create a file named `.env` inside the `frontend` directory (path: `frontend/.env`):
+--------------------------------------------------------------------
+VITE_API_URL=http://localhost:5000
+VITE_TOMTOM_KEY=ajoovhOdHPf4J7JsYyc2HvkXdb0tNVNX
+--------------------------------------------------------------------
+* NOTE: The TomTom key is required to render live Traffic Flow (congestion lines)
+  and Traffic Incidents (road closures/accidents) directly on the Leaflet map.
+
+--------------------------------------------------------------------------------
+
+4. INSTALLATION & SETUP SEQUENCE
+---------------------------------
+
+4.1 STEP 1: PYTHON LIBRARIES SETUP
+Open your terminal at the project root directory and execute:
+```bash
+pip install -r requirements.txt
+```
+This installs pandas, numpy, scikit-learn, and reportlab.
+
+4.2 STEP 2: INSTALL BACKEND PACKAGES
+Navigate to the backend folder and install the Node packages:
+```bash
+cd backend
+npm install
+```
+
+4.3 STEP 3: INSTALL FRONTEND PACKAGES
+Navigate to the frontend folder and install the web dependencies:
+```bash
+cd ../frontend
+npm install
+```
+
+--------------------------------------------------------------------------------
+
+5. DATABASE SEEDING
+--------------------
+Before starting the servers, you must seed the database. The system uses a
+memory-efficient read stream to parse over 240,000 records without crashing.
+
+Navigate to the `backend` directory and run:
+```bash
+cd ../backend
+node seed.js
+```
+
+What this does:
+* Connects to your configured MongoDB database.
+* Clears old data in Hotspots, Violations, RepeatOffenders, and StationLoad collections.
+* Parses and batch-inserts (10,000 rows at a time) records from:
+  - `hotspots_with_road_context_v3.csv` -> Hotspots
+  - `violations_scored (1).csv` -> Violations
+  - `repeat_offenders.csv` -> Repeat Offenders
+  - `station_load.csv` -> Station workloads
+* Discards noise coordinate entries (`cluster_id = -1`) to keep the DB lean.
+* Builds 2DSphere spatial indexes on coordinates and compound indexes on ranks.
+
+--------------------------------------------------------------------------------
+
+6. RUNNING THE APPLICATIONS
+----------------------------
+
+6.1 STARTING THE BACKEND API SERVER
+Navigate to the `backend` directory and start the server:
+```bash
+cd backend
+npm start
+```
+* The backend will run on: http://localhost:5000
+* A startup sync process will execute after 5 seconds to update congestion levels.
+* A background cron scheduler will run every 10 minutes to verify traffic.
+
+6.2 STARTING THE FRONTEND WEB DASHBOARD
+Open a second terminal window, navigate to the `frontend` directory, and run:
+```bash
+cd frontend
+npm run dev
+```
+* The frontend client will run on: http://localhost:5173
+* Open your browser and navigate to: http://localhost:5173
+
+--------------------------------------------------------------------------------
+
+7. USER WORKFLOW GUIDE
+-----------------------
+Once both services are running and open in the browser, follow this workflow:
+
+1. **Dashboard Tab**:
+   * View the metrics grid (hotspots count, total violations, impact score, recurrence rate).
+   * Filter hotspots by "Police Station" or change the limit of displayed cards.
+   * Review the ranked list of hotspots on the sidebar.
+   * Click on a card: the map will glide and focus on the cluster. The bottom panel
+     will populate with the cluster's statistics, vehicle type distributions, and recent incidents.
+
+2. **TomTom Traffic Overlay**:
+   * On the map control panel (top-right), check the "Traffic Flow" box to display
+     live green/yellow/red congestion lines.
+   * Check the "Incidents" box to display live hazard icons.
+
+3. **Patrol Routes Tab**:
+   * Select a Police Station, enter the number of officers, set the hotspot limit,
+     and select a shift (Morning, Afternoon, Evening, Night).
+   * Click "Generate Patrol Routes". The system runs the K-Means clustering and TSP solver.
+   * View the optimized routes drawn as color-coded lines on the map.
+   * View/print the printable briefing instructions (with stop coordinates, dwell times, and ETAs).
+
+4. **Offenders & Workloads Tab**:
+   * Browse high-frequency repeat offenders by registration plate number.
+   * Review police station backlog charts and the statistical T-Test validation.
+
+5. **Reports Tab**:
+   * Select a Police Station, enter Year and Month, and click "Generate Report".
+   * The backend compiles a PDF via `one.py` and stores the binary buffer in MongoDB.
+   * Click "Download" to retrieve the generated PDF report.
+
+================================================================================
