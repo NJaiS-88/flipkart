@@ -337,6 +337,20 @@ export default function PatrolRoutes() {
                               +{stop.travel_km_from_prev} km · {stop.travel_min_from_prev} min drive
                             </span>
                           )}
+                          {stop.congestion_level && stop.congestion_level !== "low" && (
+                            <span style={{
+                              marginLeft: "8px",
+                              fontSize: "0.72rem",
+                              fontWeight: 600,
+                              color: stop.congestion_level === "heavy" ? "#fca5a5" : "#fed7aa",
+                              background: stop.congestion_level === "heavy" ? "rgba(239,68,68,0.25)" : "rgba(249,115,22,0.25)",
+                              border: stop.congestion_level === "heavy" ? "1px solid rgba(239,68,68,0.4)" : "1px solid rgba(249,115,22,0.4)",
+                              padding: "2px 6px",
+                              borderRadius: "4px"
+                            }}>
+                              🚦 {stop.congestion_level.toUpperCase()} TRAFFIC ({stop.congestion_multiplier}x multiplier)
+                            </span>
+                          )}
                         </div>
                         <div style={{ fontSize: "0.82rem", color: "var(--text-secondary)" }}>
                           <span style={{ color: OFFICER_COLORS[oi % OFFICER_COLORS.length], fontWeight: 600 }}>ETA {stop.eta}</span>
@@ -350,7 +364,7 @@ export default function PatrolRoutes() {
                           </span>
                           {stop.score > 0 && (
                             <span style={{ marginLeft: "6px", fontSize: "0.72rem", color: "var(--text-secondary)" }}>
-                              Score: {stop.score}
+                              Score: {stop.score} {stop.raw_score && stop.raw_score !== stop.score && `(raw: ${stop.raw_score})`}
                             </span>
                           )}
                         </div>

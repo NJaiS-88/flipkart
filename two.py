@@ -4,6 +4,8 @@ import json
 import math
 import warnings
 from datetime import datetime, timedelta
+import requests
+
 
 import numpy as np
 import pandas as pd
@@ -46,6 +48,83 @@ def _haversine_km(lat1, lon1, lat2, lon2):
     dlambda = math.radians(lon2 - lon1)
     a = math.sin(dphi/2)**2 + math.cos(phi1)*math.cos(phi2)*math.sin(dlambda/2)**2
     return R * 2 * math.asin(math.sqrt(a))
+
+def _get_mappls_token(client_id, client_secret):
+    """Fetch OAuth 2.0 Access Token from MapmyIndia (Mappls)."""
+    try:
+        url = "https://outpost.mappls.com/api/security/oauth/token"
+        payload = {
+            "grant_type": "client_credentials",
+            "client_id": client_id,
+            "client_secret": client_secret
+        }
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+        response = requests.post(url, data=payload, headers=headers, timeout=5)
+        if response.status_code == 200:
+            res_json = response.json()
+            return res_json.get("access_token")
+        else:
+            print(f"[MapmyIndia] Auth Failed ({response.status_code}): {response.text}", flush=True)
+    except Exception as e:
+        print(f"[MapmyIndia] Error fetching OAuth token: {str(e)}", flush=True)
+    return None
+
+def _get_mappls_distance_matrix(points, access_token):
+    """
+    Fetch real-world routing distances (km) and durations (min) using MapmyIndia.
+    points: list of (lat, lon)
+    """
+    n = len(points)
+    dist_mat = np.zeros((n, n))
+    dur_mat = np.zeros((n, n))
+    
+    # Pre-fill with Haversine fallback
+    for i in range(n):
+        for j in range(n):
+            if i != j:
+                d = _haversine_km(*points[i], *points[j])
+                dist_mat[i, j] = d
+                dur_mat[i, j] = (d / AVG_SPEED_KMPH) * 60
+
+    if not access_token or n < 2:
+        return dist_mat, dur_mat, False
+
+    try:
+        # Mappls expects coords as: lon,lat;lon,lat...
+        coord_strings = [f"{lon},{lat}" for lat, lon in points]
+        coords_path = ";".join(coord_strings)
+        
+        # Use primary resource with traffic matrix if enabled, or standard
+        url = f"https://route.mappls.com/route/dm/distance_matrix/driving/{coords_path}"
+        params = {
+            "rtype": "0",
+            "region": "ind",
+            "access_token": access_token
+        }
+        
+        response = requests.get(url, params=params, timeout=8)
+        if response.status_code == 200:
+            res_data = response.json()
+            if "distances" in res_data and "durations" in res_data:
+                # Distances are usually in meters, Durations in seconds
+                m_dists = res_data["distances"]
+                s_durs = res_data["durations"]
+                
+                for i in range(n):
+                    for j in range(n):
+                        if i != j and i < len(m_dists) and j < len(m_dists[i]):
+                            dist_mat[i, j] = m_dists[i][j] / 1000.0  # to km
+                            dur_mat[i, j] = s_durs[i][j] / 60.0      # to minutes
+                print(f"[MapmyIndia] Loaded real-world distance matrix for {n} locations.", flush=True)
+                return dist_mat, dur_mat, True
+        else:
+            print(f"[MapmyIndia] Distance Matrix API Failed ({response.status_code}): {response.text}", flush=True)
+    except Exception as e:
+        print(f"[MapmyIndia] Error calling Distance Matrix API: {str(e)}", flush=True)
+        
+    return dist_mat, dur_mat, False
 
 def _build_distance_matrix(points):
     n = len(points)
@@ -149,12 +228,23 @@ def main(
         hour=shift_start_hour, minute=0, second=0, microsecond=0
     )
 
+    # Check for MapmyIndia credentials
+    client_id = os.environ.get("MAPMYINDIA_CLIENT_ID")
+    client_secret = os.environ.get("MAPMYINDIA_CLIENT_SECRET")
+    access_token = None
+    if client_id and client_secret:
+        print("[MapmyIndia] Credentials detected. Authenticating...", flush=True)
+        access_token = _get_mappls_token(client_id, client_secret)
+
     for officer_id in range(1, n_officers + 1):
         subset = hdf_shift[hdf_shift["officer_id"] == officer_id].reset_index(drop=True)
         if len(subset) == 0:
             continue
         points = list(zip(subset["lat"], subset["lon"]))
-        dist_mat = _build_distance_matrix(points)
+        
+        # Build distance matrix (try MapmyIndia real route network first, fallback to Haversine)
+        dist_mat, dur_mat, is_real_traffic = _get_mappls_distance_matrix(points, access_token)
+        
         start_idx = int(subset[score_col].idxmax()) if len(subset) > 1 else 0
         route_indices = _nearest_neighbour_tsp(dist_mat, start=start_idx)
 
@@ -167,12 +257,29 @@ def main(
         current_time = shift_start_dt
         for stop_order, idx in enumerate(route_indices, start=1):
             row = subset.iloc[idx]
+            congestion_level = "low"
+            congestion_mult = 1.0
+
             if stop_order == 1:
                 travel_km, travel_min = 0.0, 0
             else:
                 prev_idx = route_indices[stop_order - 2]
                 travel_km = dist_mat[prev_idx, idx]
-                travel_min = int((travel_km / AVG_SPEED_KMPH) * 60)
+                
+                if is_real_traffic:
+                    travel_min = int(round(dur_mat[prev_idx, idx]))
+                    # Compute traffic speed to classify congestion
+                    if travel_min > 0:
+                        real_speed = (travel_km / (travel_min / 60.0))
+                        if real_speed < 12.0:
+                            congestion_level = "heavy"
+                            congestion_mult = 1.5
+                        elif real_speed < 20.0:
+                            congestion_level = "moderate"
+                            congestion_mult = 1.2
+                else:
+                    travel_min = int((travel_km / AVG_SPEED_KMPH) * 60)
+                
                 current_time += timedelta(minutes=travel_min)
 
             eta_str = current_time.strftime("%H:%M")
@@ -185,6 +292,10 @@ def main(
             police_station = str(row.get("police_station", "")) if "police_station" in row.index else ""
             label = junction if junction and junction not in ("", "nan", "No Junction") else (road_name if road_name and road_name != "nan" else f"Cluster #{row[id_col] if id_col else idx}")
 
+            # Apply congestion multiplier to score
+            raw_score = float(row[score_col])
+            adjusted_score = raw_score * congestion_mult
+
             stop = {
                 "stop_order": stop_order,
                 "officer_id": officer_id,
@@ -193,7 +304,10 @@ def main(
                 "police_station": police_station,
                 "lat": round(float(row["lat"]), 6),
                 "lon": round(float(row["lon"]), 6),
-                "score": round(float(row[score_col]), 4),
+                "score": round(adjusted_score, 4),
+                "raw_score": round(raw_score, 4),
+                "congestion_level": congestion_level,
+                "congestion_multiplier": congestion_mult,
                 "eta": eta_str,
                 "depart": depart_str,
                 "dwell_minutes": DWELL_MINUTES,
@@ -281,14 +395,22 @@ if __name__ == "__main__":
     shift_name     = "morning"
 
     args = sys.argv[1:]
-    if len(args) >= 1 and args[0]:
-        zone_filter = args[0]
-    if len(args) >= 2 and args[1]:
-        n_officers = int(args[1])
-    if len(args) >= 3 and args[2]:
-        top_n_hotspots = int(args[2])
-    if len(args) >= 4 and args[3]:
-        shift_name = args[3]
+    numeric_args = []
+    
+    for arg in args:
+        if not arg:
+            continue
+        if arg.lower() in SHIFT_PRESETS:
+            shift_name = arg.lower()
+        elif arg.isdigit():
+            numeric_args.append(int(arg))
+        else:
+            zone_filter = arg
+
+    if len(numeric_args) >= 1:
+        n_officers = numeric_args[0]
+    if len(numeric_args) >= 2:
+        top_n_hotspots = numeric_args[1]
 
     start_hour, end_hour = SHIFT_PRESETS.get(shift_name, (7, 12))
 

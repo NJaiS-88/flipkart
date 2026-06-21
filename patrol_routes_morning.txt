@@ -1,47 +1,28 @@
 PATROL BRIEFING — MORNING SHIFT
-Generated: 2026-06-21 16:43
+Generated: 2026-06-21 17:35
 Shift window: 07:00 - 12:00
-Zone: Bellandur
+Zone: All zones
 ========================================================
 
 OFFICER 1
-  Total stops:    1
-  Total distance: 0 km
-  Est. finish:    07:20
+  Total stops:    2
+  Total distance: 0.84 km
+  Est. finish:    07:42
 
   #    ETA           LAT         LON    SCORE  LOCATION
   ---- ------ ---------- ----------- --------  --------------------
-  1    07:00    12.92979    77.69495   134.06  Sarjapur Road N
-  Depart last stop by: 07:20
+  1    07:00    12.93975    77.69556  3091.86  Sarjapur Road N
+  2    07:22    12.93378    77.69087  2910.42  Sarjapur Road N
+  Depart last stop by: 07:42
 
 OFFICER 2
-  Total stops:    13
-  Total distance: 2.62 km
-  Est. finish:    11:24
+  Total stops:    3
+  Total distance: 9.61 km
+  Est. finish:    08:22
 
   #    ETA           LAT         LON    SCORE  LOCATION
   ---- ------ ---------- ----------- --------  --------------------
-  1    07:00    12.92623    77.67677   412.64  Sarjapur Road S
-  2    07:20    12.92621    77.67648   167.84  Sarjapur Road S
-  3    07:40    12.92586    77.67675   137.07  Sarjapur Road S
-  4    08:00    12.92571    77.67618   255.92  Sarjapur Road S
-  5    08:20    12.92684    77.67888   333.19  Sarjapur Road S
-  6    08:40    12.92698    77.67920   113.88  Sarjapur Road S
-  7    09:00    12.92722    77.67951   350.95  Sarjapur Road S
-  8    09:20    12.92736    77.68009   365.62  Sarjapur Road S
-  9    09:40    12.92737    77.68054   396.33  Sarjapur Road S
-  10   10:00    12.92779    77.68070   296.96  Sarjapur Road S
-  11   10:20    12.92790    77.67971   170.19  Sarjapur Road S
-  12   10:40    12.92830    77.67972   145.91  Sarjapur Road S
-  13   11:04    12.92077    77.66537   320.01  ORR SE
-  Depart last stop by: 11:24
-
-OFFICER 3
-  Total stops:    1
-  Total distance: 0 km
-  Est. finish:    07:20
-
-  #    ETA           LAT         LON    SCORE  LOCATION
-  ---- ------ ---------- ----------- --------  --------------------
-  1    07:00    12.89980    77.67543   119.54  side street (>800m from major road)
-  Depart last stop by: 07:20
+  1    07:00    12.98114    77.61016  3585.77  Nrupathunga Road
+  2    07:29    12.96400    77.57685  2687.63  MC Modi Road
+  3    08:02    13.00866    77.55444  2323.10  Tumkur Road
+  Depart last stop by: 08:22
