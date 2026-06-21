@@ -147,7 +147,7 @@ graph LR
         N -->|< 12| O[Heavy: Mult 1.5]
         N -->|12 - 20| P[Moderate: Mult 1.2]
         N -->|>= 20| Q[Low: Mult 1.0]
-        O & P & Q --> R[Mongoose save() -> MongoDB]
+        O & P & Q --> R["Mongoose save() -> MongoDB"]
     end
 ```
 
