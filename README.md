@@ -52,7 +52,7 @@ graph TD
 ## ⚡ Core Features
 
 ### 1. 🗺️ Hotspot Visualization & Analysis
-- **Dynamic Leaflet Map**: Rendered in a sleek, custom dark-mode style. Sizer radius scale dynamically maps to $\sqrt{\text{impact\_score}}$ and colors transition from Neon Cyan (low severity) to Orange and Deep Crimson Red (high severity/anomaly).
+- **Dynamic Leaflet Map**: Rendered in a sleek, custom dark-mode style. Sizer radius scale dynamically maps to $\sqrt{\text{impact score}}$ and colors transition from Neon Cyan (low severity) to Orange and Deep Crimson Red (high severity/anomaly).
 - **TomTom Live Layers**: Toggleable overlays showing real-time road conditions directly on the Leaflet map:
   - **Traffic Flow Layer**: Color-coded road segments (Green: Free flow, Yellow: Slow, Red: Heavy delay).
   - **Traffic Incidents Layer**: Live icons displaying accidents, construction, and traffic bottlenecks.
